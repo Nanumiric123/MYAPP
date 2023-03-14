@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:contentDescription="@string/P04"
+    tools:context=".P04">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/P04_tv_title"
+            android:layout_width="match_parent"
+            android:layout_height="109dp"
+            android:gravity="bottom|center_vertical"
+            android:text="@string/p04Title"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textSize="24sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="604dp"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="605dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="603dp"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="65dp"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/p04_menu"
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
+                            android:text="Menu" />
+
+                        <Button
+                            android:id="@+id/p04_clear"
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
+                            android:text="Clear" />
+
+                        <Button
+                            android:id="@+id/p04_save"
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
+                            android:text="Save" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="539dp"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="302dp"
+                            android:layout_height="79dp"
+                            android:gravity="bottom|left"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/p04_tv_part_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/material_label"
+                                android:textColor="#FF0000"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/p04_tv_material"
+                                android:layout_width="match_parent"
+                                android:layout_height="44dp"
+                                android:background="#9C9C9C"
+                                android:gravity="center_vertical"
+                                android:textColor="#000000"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="300dp"
+                            android:layout_height="76dp"
+                            android:gravity="bottom"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/p04_batch_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/BatchLabel"
+                                android:textColor="#FF0000"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/p04_batch"
+                                android:layout_width="match_parent"
+                                android:layout_height="47dp"
+                                android:background="#9C9C9C"
+                                android:gravity="center_vertical"
+                                android:textColor="#000000"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="300dp"
+                            android:layout_height="90dp"
+                            android:gravity="bottom"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/p04_qty_lbl"
+                                android:layout_width="match_parent"
+                                android:layout_height="2dp"
+                                android:layout_weight="1"
+                                android:gravity="bottom"
+                                android:text="@string/quantity_label"
+                                android:textColor="#FF0000"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+
+                            <EditText
+                                android:id="@+id/p04_qty_input"
+                                android:layout_width="160dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:background="@drawable/border"
+                                android:ems="10"
+                                android:hint="@string/quantityHint"
+                                android:importantForAutofill="no"
+                                android:inputType="number"
+                                android:textColor="#000000"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="303dp"
+                            android:layout_height="match_parent"
+                            android:gravity="center_horizontal"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="137dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="10dp"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/p04_from_sloc"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="48dp"
+                                    android:text="@string/fromStorageLoc"
+                                    android:textColor="#FF0000"
+                                    android:textSize="20sp"
+                                    android:textStyle="bold" />
+
+                                <EditText
+                                    android:id="@+id/P04_in_from_loc"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/border"
+                                    android:ems="10"
+                                    android:hint="From Loc"
+                                    android:inputType="text"
+                                    android:minHeight="48dp"
+                                    android:textColor="#000000"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/p04_fromBin_desc"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="45dp"
+                                    android:gravity="bottom"
+                                    android:text="@string/fromStorageBin"
+                                    android:textColor="#FF0000"
+                                    android:textStyle="bold" />
+
+                                <EditText
+                                    android:id="@+id/p04_fromBin_in"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/border"
+                                    android:ems="10"
+                                    android:hint="@string/fromStorageBin"
+                                    android:inputType="text"
+                                    android:minHeight="48dp"
+                                    android:text="@string/Empty" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="139dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="10dp"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/p04_to_sloc"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="48dp"
+                                    android:text="@string/ToStorageLoc"
+                                    android:textColor="#FF0000"
+                                    android:textSize="20sp"
+                                    android:textStyle="bold" />
+
+                                <EditText
+                                    android:id="@+id/P04_in_to_loc"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/border"
+                                    android:ems="10"
+                                    android:hint="To Loc"
+                                    android:inputType="number"
+                                    android:minHeight="48dp"
+                                    android:textColor="#000000"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/p04_toBin_desc"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="48dp"
+                                    android:gravity="bottom"
+                                    android:text="@string/toStorageBin"
+                                    android:textColor="#FF0000"
+                                    android:textStyle="bold" />
+
+                                <EditText
+                                    android:id="@+id/p04_toBin_in"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/border"
+                                    android:ems="10"
+                                    android:hint="@string/toStorageBin"
+                                    android:inputType="text"
+                                    android:minHeight="48dp"
+                                    android:text="@string/Empty" />
+
+                            </LinearLayout>
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/p04_pb"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="603dp"
+                    android:visibility="invisible"
+                    tools:visibility="invisible" />
+
+            </FrameLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".P08">
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/Scrolview"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_p08_title"
+                android:layout_width="282dp"
+                android:layout_height="50dp"
+                android:gravity="bottom|center_horizontal"
+                android:text="@string/P038title"
+                android:textAlignment="center"
+                android:textColor="#000000"
+                android:textSize="24sp" />
+
+            <LinearLayout
+                android:layout_width="342dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="297dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <Button
+                            android:id="@+id/P08_btn_clear"
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/clear" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="18dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <Button
+                            android:id="@+id/P08_btn_save"
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/save" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/P08_txt_part_desc"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:gravity="bottom"
+                            android:text="@string/material_label"
+                            android:textColor="#FF0000"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/P08_txt_part_num"
+                            android:layout_width="match_parent"
+                            android:layout_height="53dp"
+                            android:background="@drawable/border"
+                            android:gravity="center_vertical"
+                            android:text="@string/Empty"
+                            android:textColor="#000000"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:id="@+id/P08_tv_batch_desc"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:gravity="bottom"
+                            android:text="TextView"
+                            android:textColor="#FF0000"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            tools:text="@string/BatchLabel" />
+
+                        <EditText
+                            android:id="@+id/P08_in_batch_ed"
+                            android:layout_width="match_parent"
+                            android:layout_height="56dp"
+                            android:background="@drawable/border"
+                            android:ems="10"
+                            android:hint="@string/BatchHint"
+                            android:inputType="text"
+                            android:text="@string/Empty" />
+
+                        <TextView
+                            android:id="@+id/P08_btn_storage_bin_desc"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:gravity="bottom"
+                            android:text="@string/StorageBinDesc"
+                            android:textColor="#FF0000"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <EditText
+                            android:id="@+id/P08_ed_storBin_in"
+                            android:layout_width="match_parent"
+                            android:layout_height="58dp"
+                            android:background="@drawable/border"
+                            android:ems="10"
+                            android:hint="@string/StorageBinDescHint"
+                            android:inputType="text"
+                            android:text="@string/Empty" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/P08_tv_storeloc_desc"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:gravity="bottom"
+                            android:text="@string/fromStorageLoc"
+                            android:textColor="#FF0000"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <EditText
+                            android:id="@+id/P08_ed_storLoc_in"
+                            android:layout_width="match_parent"
+                            android:layout_height="56dp"
+                            android:background="@drawable/border"
+                            android:ems="10"
+                            android:hint="@string/ToStorageLocationInputHint"
+                            android:inputType="text"
+                            android:text="@string/Empty"
+                            android:textColor="#000000" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/P08_pb"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="305dp"
+                    android:visibility="gone" />
+
+            </FrameLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

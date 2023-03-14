@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:contentDescription="@string/Empty"
+    tools:context=".T32"
+    tools:ignore="SpeakableTextPresentCheck">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="96dp"
+            android:gravity="center_horizontal|center_vertical"
+            android:text="@string/t32Title"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <FrameLayout
+            android:layout_width="342dp"
+            android:layout_height="646dp"
+            android:layout_gravity="center"
+            android:foregroundGravity="center">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="646dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="356dp"
+                    android:layout_height="62dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="105dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/btnT32Save"
+                            android:layout_width="59dp"
+                            android:layout_height="50dp"
+                            android:layout_margin="10dp"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginBottom="10dp"
+                            android:layout_weight="1"
+                            android:width="80dp"
+                            android:text="@string/save" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="105dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/btnT32Clear"
+                            android:layout_width="80dp"
+                            android:layout_height="50dp"
+                            android:layout_margin="10dp"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_marginBottom="10dp"
+                            android:layout_weight="1"
+                            android:width="80dp"
+                            android:height="50dp"
+                            android:minHeight="48dp"
+                            android:text="@string/clear" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="105dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/btnT32Menu"
+                            android:layout_width="80dp"
+                            android:layout_height="50dp"
+                            android:layout_margin="10dp"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_weight="1"
+                            android:width="80dp"
+                            android:text="@string/menu" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="85dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tv_T32StorageBin"
+                        android:layout_width="112dp"
+                        android:layout_height="60dp"
+                        android:gravity="center"
+                        android:text="@string/StorageBinDesc"
+                        android:textColor="#000000"
+                        android:textSize="18sp" />
+
+                    <EditText
+                        android:id="@+id/in_T32StorageBin"
+                        android:layout_width="184dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/border"
+                        android:ems="10"
+                        android:hint="@string/StorageBinDescHint"
+                        android:inputType="text"
+                        android:textColor="#000000" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="69dp"
+                        android:gravity="bottom|center_horizontal"
+                        android:orientation="vertical">
+
+                        <EditText
+                            android:id="@+id/ed_T32StoreKanban"
+                            android:layout_width="310dp"
+                            android:layout_height="60dp"
+                            android:background="@drawable/border"
+                            android:ems="10"
+                            android:hint="@string/StoreKanban"
+                            android:inputType="text"
+                            android:minHeight="48dp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="69dp"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvT32_Quantity"
+                            android:layout_width="394dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/quantity_label"
+                            android:textAlignment="center"
+                            android:textColor="#000000"
+                            android:textSize="18sp" />
+
+                        <TextView
+                            android:id="@+id/tvT32_Material"
+                            android:layout_width="396dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/material_label"
+                            android:textAlignment="center"
+                            android:textColor="#000000"
+                            android:textSize="18sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="76dp"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <EditText
+                            android:id="@+id/in_T32ProdKanban"
+                            android:layout_width="310dp"
+                            android:layout_height="60dp"
+                            android:background="@drawable/border"
+                            android:ems="10"
+                            android:hint="@string/ProdKanban"
+                            android:inputType="textPersonName" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/t32_pb"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="420dp"
+                android:visibility="gone"
+                tools:visibility="gone" />
+
+        </FrameLayout>
+
+    </LinearLayout>
+</ScrollView>

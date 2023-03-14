@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/launcher_round"
+        android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:noHistory="true"
+        android:requestLegacyExternalStorage="true"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MyApplication"
+        android:usesCleartextTraffic="true">
+        <activity
+            android:name=".T32"
+            android:exported="false" />
+        <activity
+            android:name=".P08"
+            android:exported="false" />
+        <activity
+            android:name=".P04"
+            android:exported="false" />
+        <activity
+            android:name=".P03"
+            android:exported="false" />
+        <activity
+            android:name=".ICTransferToEMS"
+            android:exported="false" />
+        <activity
+            android:name=".P09"
+            android:exported="false" />
+        <activity
+            android:name=".B48"
+            android:exported="false" />
+        <activity
+            android:name=".T48"
+            android:exported="false" />
+        <activity
+            android:name=".T47"
+            android:exported="false" />
+        <activity
+            android:name=".T46"
+            android:exported="false" />
+        <activity
+            android:name=".T45"
+            android:exported="false" />
+        <activity
+            android:name=".ReelVerification"
+            android:exported="false" />
+        <activity
+            android:name=".T40"
+            android:exported="false" />
+        <activity
+            android:name=".T39"
+            android:exported="false" />
+        <activity
+            android:name=".T37"
+            android:exported="false" />
+        <activity
+            android:name=".T36"
+            android:exported="false" />
+        <activity
+            android:name=".T35"
+            android:exported="false" />
+        <activity
+            android:name=".TModule"
+            android:exported="false" />
+        <activity
+            android:name=".T11"
+            android:exported="false" />
+        <activity
+            android:name=".C09"
+            android:exported="false" />
+        <activity
+            android:name=".C08"
+            android:exported="false" />
+        <activity
+            android:name=".C07"
+            android:exported="false" />
+        <activity
+            android:name=".C06"
+            android:exported="false" />
+        <activity
+            android:name=".C05"
+            android:exported="false" />
+        <activity
+            android:name=".C04"
+            android:exported="false" />
+        <activity
+            android:name=".C03"
+            android:exported="false" />
+        <activity
+            android:name=".C02"
+            android:exported="false" />
+        <activity
+            android:name=".C01"
+            android:exported="false" />
+        <activity
+            android:name=".P07"
+            android:exported="false" />
+        <activity
+            android:name=".P06"
+            android:exported="false" />
+        <activity
+            android:name=".P05"
+            android:exported="false" />
+        <activity
+            android:name=".P02"
+            android:exported="false" />
+        <activity
+            android:name=".P01"
+            android:exported="false" />
+        <activity
+            android:name=".T33"
+            android:exported="false" />
+        <activity
+            android:name=".T29"
+            android:exported="false" />
+        <activity
+            android:name=".T28"
+            android:exported="false" />
+        <activity
+            android:name=".T27"
+            android:exported="false" />
+        <activity
+            android:name=".T26"
+            android:exported="false" />
+        <activity
+            android:name=".T25"
+            android:exported="false" />
+        <activity
+            android:name=".T24"
+            android:exported="false" />
+        <activity
+            android:name=".T22"
+            android:exported="false" />
+        <activity
+            android:name=".T21"
+            android:exported="false" />
+        <activity
+            android:name=".T20"
+            android:exported="false" />
+        <activity
+            android:name=".T19"
+            android:exported="false" />
+        <activity
+            android:name=".T18"
+            android:exported="false" />
+        <activity
+            android:name=".T17"
+            android:exported="false" />
+        <activity
+            android:name=".T15"
+            android:exported="false" />
+        <activity
+            android:name=".T13"
+            android:exported="false" />
+        <activity
+            android:name=".T12"
+            android:exported="false" />
+        <activity
+            android:name=".T10"
+            android:exported="false" />
+        <activity
+            android:name=".T09"
+            android:exported="false" />
+        <activity
+            android:name=".S04"
+            android:exported="false" />
+        <activity
+            android:name=".T07"
+            android:exported="false" />
+        <activity
+            android:name=".T06"
+            android:exported="false" />
+        <activity
+            android:name=".T05"
+            android:exported="false" />
+        <activity
+            android:name=".T04"
+            android:exported="false" />
+        <activity
+            android:name=".T03"
+            android:exported="false" />
+        <activity
+            android:name=".T02"
+            android:exported="false" />
+        <activity
+            android:name=".T01"
+            android:exported="false" />
+        <activity
+            android:name=".T31"
+            android:exported="false" />
+        <activity
+            android:name=".T30"
+            android:exported="false" />
+        <activity
+            android:name=".M06"
+            android:exported="false" />
+        <activity
+            android:name=".M05"
+            android:exported="false" />
+        <activity
+            android:name=".PhysicalInventory"
+            android:exported="false" />
+        <activity
+            android:name=".M04"
+            android:exported="false" />
+        <activity
+            android:name=".M03"
+            android:exported="false" />
+        <activity
+            android:name=".M02"
+            android:exported="false" />
+        <activity
+            android:name=".M01"
+            android:exported="false" />
+        <activity
+            android:name=".AssemblyProduction"
+            android:exported="false" />
+        <activity
+            android:name=".OutstandingList"
+            android:exported="false" />
+        <activity
+            android:name=".S02"
+            android:exported="false" />
+        <activity
+            android:name=".T16"
+            android:exported="false" />
+        <activity
+            android:name=".SAPPartInfo"
+            android:exported="false" />
+        <activity
+            android:name=".SAPProduction2"
+            android:exported="false" />
+        <activity
+            android:name=".S03"
+            android:exported="false" />
+        <activity
+            android:name=".S01"
+            android:exported="false" />
+        <activity
+            android:name=".SAPProduction"
+            android:exported="false" />
+        <activity
+            android:name=".StandardBin2"
+            android:exported="false" />
+        <activity
+            android:name=".StandardBinAdjustment"
+            android:exported="false" />
+        <activity
+            android:name=".FGPutaway"
+            android:exported="false" />
+        <activity
+            android:name=".BalanceReturn"
+            android:exported="false" />
+        <activity
+            android:name=".Transfer"
+            android:exported="false" />
+        <activity
+            android:name=".StandardBin"
+            android:exported="false" />
+        <activity
+            android:name=".Putaway"
+            android:exported="false" />
+        <activity
+            android:name=".Production"
+            android:exported="false" />
+        <activity
+            android:name=".PickFG"
+            android:exported="false" />
+        <activity
+            android:name=".GoodsReceipt"
+            android:exported="false" />
+        <activity
+            android:name=".DespatchFG"
+            android:exported="false" />
+        <activity
+            android:name=".AIKitting"
+            android:exported="false" />
+        <activity
+            android:name=".IQA"
+            android:exported="false" />
+        <activity
+            android:name=".Main_Screen"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".MainActivity" />
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".MainActivity" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.codepath.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/fileprovider" />
+        </provider>
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.codepath.fileproviderpath"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_provider_paths" />
+        </provider>
+    </application>
+
+    <queries>
+
+        <!-- Camera -->
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+    </queries>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+
+    <uses-permission android:name="android.permission.STORAGE" />
+
+</manifest>
