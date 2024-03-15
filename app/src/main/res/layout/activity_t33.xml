@@ -4,6 +4,295 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="10dp"
     tools:context=".T33">
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/app_name"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/T33TITLE"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:paddingBottom="20dp"
+                        android:text="T33: Rack to WRK Area"
+                        android:textAlignment="center"
+                        android:textColor="#000000"
+                        android:textSize="24sp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/T33BtnMenu"
+                            android:layout_width="wrap_content"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:layout_weight="1"
+                            android:text="Menu" />
+
+                        <Button
+                            android:id="@+id/T33BtnClear"
+                            android:layout_width="wrap_content"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:layout_weight="1"
+                            android:text="@string/Clear" />
+
+                        <Button
+                            android:id="@+id/T33BtnSave"
+                            android:layout_width="wrap_content"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:layout_weight="1"
+                            android:text="@string/save" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/T33TVBarcode"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/item_barcode"
+                            android:textColor="#FF0000"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <EditText
+                            android:id="@+id/T33EDBarcode"
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:background="@drawable/cell_with_border"
+                            android:ems="10"
+                            android:hint="@string/BarcodeInputHint"
+                            android:inputType="text"
+                            android:padding="10dp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_margin="10dp"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/T33TVPart"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/part"
+                                    android:textColor="#FF0000"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold" />
+
+                                <EditText
+                                    android:id="@+id/T33EDPart"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="60dp"
+                                    android:background="@drawable/cell_with_border"
+                                    android:ems="10"
+                                    android:hint="@string/part"
+                                    android:inputType="text"
+                                    android:padding="10dp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_margin="10dp"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/T33TVUOM"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/uom_label"
+                                    android:textColor="#FF0000"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold" />
+
+                                <EditText
+                                    android:id="@+id/T33EDUOM"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="60dp"
+                                    android:background="@drawable/cell_with_border"
+                                    android:ems="10"
+                                    android:inputType="text"
+                                    android:padding="10dp"
+                                    android:text="@string/UOM_PC"
+                                    android:textAlignment="center"
+                                    android:textColor="#000000"
+                                    android:textSize="20sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_margin="10dp"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/T33TVQty"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/quantity"
+                                    android:textColor="#FF0000"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold" />
+
+                                <EditText
+                                    android:id="@+id/T33EDQty"
+                                    android:layout_width="140dp"
+                                    android:layout_height="60dp"
+                                    android:background="@drawable/cell_with_border"
+                                    android:ems="10"
+                                    android:hint="@string/quantity"
+                                    android:inputType="text"
+                                    android:padding="10dp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_margin="10dp"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/T33TVLot"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/lot_no"
+                                    android:textColor="#FF0000"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold" />
+
+                                <EditText
+                                    android:id="@+id/T33EDLot"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="60dp"
+                                    android:background="@drawable/cell_with_border"
+                                    android:ems="10"
+                                    android:hint="@string/lot_no"
+                                    android:inputType="text"
+                                    android:padding="10dp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="169dp"
+                                android:layout_height="match_parent"
+                                android:layout_margin="10dp"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/T33TVfromLoc"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/from_location"
+                                    android:textColor="#FF0000"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold" />
+
+                                <EditText
+                                    android:id="@+id/T33EDfromLoc"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="60dp"
+                                    android:background="@drawable/cell_with_border"
+                                    android:ems="10"
+                                    android:hint="@string/from_location"
+                                    android:inputType="text"
+                                    android:padding="10dp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_margin="10dp"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/T33TVtoLoc"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/ToLoc"
+                                    android:textColor="#FF0000"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold" />
+
+                                <EditText
+                                    android:id="@+id/T33EDtoLoc"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="60dp"
+                                    android:background="@drawable/cell_with_border"
+                                    android:ems="10"
+                                    android:inputType="text"
+                                    android:padding="10dp"
+                                    android:text="@string/rm_workara" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/T33PB"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="invisible"
+                    tools:visibility="invisible" />
+
+            </FrameLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

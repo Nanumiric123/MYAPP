@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <queries>
+
+        <!-- Camera -->
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+    </queries>
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/launcher_round"
@@ -12,6 +30,37 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication"
         android:usesCleartextTraffic="true">
+        <activity
+            android:name=".CountScreen"
+            android:exported="false" />
+        <activity
+            android:name=".C10"
+            android:exported="false" />
+        <activity
+            android:name=".T50"
+            android:exported="false" />
+        <activity
+            android:name=".T07TransferMaterial"
+            android:exported="false"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".T07areaE"
+            android:exported="false" />
+        <activity
+            android:name=".T07areaD"
+            android:exported="false" />
+        <activity
+            android:name=".T07areaC"
+            android:exported="false" />
+        <activity
+            android:name=".T07areaB"
+            android:exported="false" />
+        <activity
+            android:name=".T07areaA"
+            android:exported="false" />
+        <activity
+            android:name=".T30"
+            android:exported="false" />
         <activity
             android:name=".T32"
             android:exported="false" />
@@ -137,7 +186,8 @@
             android:exported="false" />
         <activity
             android:name=".T21"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".T20"
             android:exported="false" />
@@ -193,9 +243,6 @@
             android:name=".T31"
             android:exported="false" />
         <activity
-            android:name=".T30"
-            android:exported="false" />
-        <activity
             android:name=".M06"
             android:exported="false" />
         <activity
@@ -230,7 +277,8 @@
             android:exported="false" />
         <activity
             android:name=".SAPPartInfo"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".SAPProduction2"
             android:exported="false" />
@@ -321,22 +369,5 @@
                 android:resource="@xml/file_provider_paths" />
         </provider>
     </application>
-
-    <queries>
-
-        <!-- Camera -->
-        <intent>
-            <action android:name="android.media.action.IMAGE_CAPTURE" />
-        </intent>
-    </queries>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
-
-    <uses-permission android:name="android.permission.STORAGE" />
 
 </manifest>

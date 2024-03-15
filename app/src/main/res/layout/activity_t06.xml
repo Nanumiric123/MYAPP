@@ -3,7 +3,160 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context=".T06">
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/T06TVTITLE"
+                android:layout_width="match_parent"
+                android:layout_height="88dp"
+                android:layout_margin="5dp"
+                android:gravity="bottom"
+                android:text="@string/t06_after_iqa_to_smt_store"
+                android:textAlignment="center"
+                android:textColor="#000000"
+                android:textSize="24sp" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <Switch
+                        android:id="@+id/T06SWSM"
+                        android:layout_width="197dp"
+                        android:layout_height="60dp"
+                        android:text="Scan Multiple"
+                        android:textSize="20sp" />
+
+                    <EditText
+                        android:id="@+id/T06EDBarcode"
+                        android:layout_width="320dp"
+                        android:layout_height="60dp"
+                        android:layout_margin="10dp"
+                        android:background="@drawable/cell_with_border"
+                        android:ems="10"
+                        android:hint="@string/BarcodeInputHint"
+                        android:inputType="text"
+                        android:paddingStart="10dp"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/T06TVMaterial"
+                        android:layout_width="320dp"
+                        android:layout_height="50dp"
+                        android:layout_margin="10dp"
+                        android:text="@string/matterialTextview_description"
+                        android:textAlignment="center"
+                        android:textColor="#000000"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/T06TVBatch"
+                        android:layout_width="320dp"
+                        android:layout_height="50dp"
+                        android:layout_margin="10dp"
+                        android:text="@string/BatchLabel"
+                        android:textAlignment="center"
+                        android:textColor="#000000"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/T06TVREEL"
+                        android:layout_width="320dp"
+                        android:layout_height="50dp"
+                        android:layout_margin="10dp"
+                        android:text="@string/ReelNum"
+                        android:textAlignment="center"
+                        android:textColor="#000000"
+                        android:textSize="20sp" />
+
+                    <EditText
+                        android:id="@+id/T06EDQuantity"
+                        android:layout_width="320dp"
+                        android:layout_height="60dp"
+                        android:ems="10"
+                        android:hint="@string/quantityHint"
+                        android:inputType="text" />
+
+                    <EditText
+                        android:id="@+id/T06EDRACK"
+                        android:layout_width="280dp"
+                        android:layout_height="60dp"
+                        android:layout_margin="10dp"
+                        android:background="@drawable/cell_with_border"
+                        android:ems="10"
+                        android:hint="@string/from_location"
+                        android:inputType="text"
+                        android:paddingStart="10dp" />
+
+                    <TextView
+                        android:id="@+id/T06TVPL"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:background="@drawable/border"
+                        android:padding="10dp"
+                        android:text="Prefered Location :"
+                        android:textColor="#000000"
+                        android:textSize="20sp" />
+
+                    <Button
+                        android:id="@+id/T06BTNTransfer"
+                        android:layout_width="150dp"
+                        android:layout_height="60dp"
+                        android:layout_margin="10dp"
+                        android:text="@string/Transfer" />
+
+                    <TextView
+                        android:id="@+id/tv06CountItems"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Total Items Scanned : "
+                        android:textAlignment="center"
+                        android:textColor="#000000"
+                        android:textSize="20sp" />
+
+                    <LinearLayout
+                        android:id="@+id/T06LinearHoriz"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/T06PB"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="invisible" />
+
+            </FrameLayout>
+        </LinearLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

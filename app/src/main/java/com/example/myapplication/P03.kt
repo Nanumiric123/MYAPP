@@ -123,7 +123,7 @@ class P03 : AppCompatActivity() {
     }
 
     private fun get_order_detail(po_num:String,con:Context) = runBlocking{
-        var k:PO_DATA = PO_DATA("",0)
+        var k:PO_DATA = com.example.myapplication.PO_DATA("", 0)
         val progressBar:ProgressBar = findViewById(R.id.p03_progress_bar)
             val first_job = GlobalScope.launch {
                 progressbar_setting(progressBar)
@@ -168,7 +168,7 @@ class P03 : AppCompatActivity() {
         val in_qty:String = qty_s.text.toString()
         val toBinLoc:String = sloc.text.toString()
         val intent = intent
-        val b_num = intent.getStringExtra(MainActivity.EXTRA_MESSAGE)
+        val b_num = intent.getStringExtra("Badge")
 
         val devName = Settings.Global.getString(getContentResolver(), Settings.Global.DEVICE_NAME)
         val url = URL("http://172.16.206.19/REST_API/Home/MPP_P03?order=$s_ponum&mat=$matFTV&batc=$s_ponum&qty=$in_qty&badge_n=$b_num&assetNo=$devName&toBin=$toBinLoc")

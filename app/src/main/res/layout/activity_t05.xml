@@ -6,4 +6,158 @@
     android:layout_height="match_parent"
     tools:context=".T05">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/T05TITLETV"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:layout_margin="10dp"
+                    android:gravity="bottom"
+                    android:text="@string/t05_IQA_to_smt_store"
+                    android:textAlignment="center"
+                    android:textColor="#000000"
+                    android:textSize="24sp" />
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/T05EDBARCODE"
+                        android:layout_width="320dp"
+                        android:layout_height="60dp"
+                        android:layout_margin="10dp"
+                        android:background="@drawable/cell_with_border"
+                        android:ems="10"
+                        android:hint="@string/BarcodeInputHint"
+                        android:inputType="text"
+                        android:padding="10dp" />
+
+                    <Switch
+                        android:id="@+id/T05SWSM"
+                        android:layout_width="wrap_content"
+                        android:layout_height="60dp"
+                        android:text="Scan Multiple"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/T05TVMATERIAL"
+                        android:layout_width="320dp"
+                        android:layout_height="50dp"
+                        android:layout_margin="10dp"
+                        android:text="@string/matterialTextview_description"
+                        android:textAlignment="center"
+                        android:textColor="#000000"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/T05TVBATCH"
+                        android:layout_width="320dp"
+                        android:layout_height="50dp"
+                        android:layout_margin="10dp"
+                        android:text="@string/BatchLabel"
+                        android:textAlignment="center"
+                        android:textColor="#000000"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/T05TVREELNUM"
+                        android:layout_width="320dp"
+                        android:layout_height="50dp"
+                        android:layout_margin="10dp"
+                        android:text="@string/ReelNum"
+                        android:textAlignment="center"
+                        android:textColor="#000000"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/T05TVPL"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:background="@drawable/border"
+                        android:padding="10dp"
+                        android:text="Prefered Loc : "
+                        android:textColor="#000000"
+                        android:textSize="20sp" />
+
+                    <EditText
+                        android:id="@+id/T05EDQUANTITY"
+                        android:layout_width="320dp"
+                        android:layout_height="60dp"
+                        android:ems="10"
+                        android:hint="@string/quantity_label"
+                        android:inputType="text" />
+
+                    <EditText
+                        android:id="@+id/T05EDINLOCATION"
+                        android:layout_width="250dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/cell_with_border"
+                        android:ems="10"
+                        android:hint="@string/from_location"
+                        android:inputType="text"
+                        android:paddingStart="10dp" />
+
+                    <Button
+                        android:id="@+id/T05BTNTRANSFER"
+                        android:layout_width="150dp"
+                        android:layout_height="60dp"
+                        android:layout_margin="10dp"
+                        android:text="@string/Transfer" />
+
+                    <TextView
+                        android:id="@+id/T05TVMatScn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Material Scanned : "
+                        android:textAlignment="center"
+                        android:textColor="#000000"
+                        android:textSize="20sp" />
+
+                    <LinearLayout
+                        android:id="@+id/T05LinearHoriz"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"></LinearLayout>
+
+                </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/T05PB"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="invisible"
+                    tools:visibility="invisible" />
+
+            </FrameLayout>
+        </LinearLayout>
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -57,7 +57,7 @@ public class ICTransferToEMS extends AppCompatActivity {
         btn_save = findViewById(R.id.btn_icTransfer_save);
         tv_ems_stor_loc = findViewById(R.id.txt_toLocation_ICTRANSFER);
         Intent intent = getIntent();
-        String b_num = intent.getStringExtra(Main_Screen.BADGE_NUMBER);
+        String b_num = intent.getStringExtra("badge");
         g_b_num = b_num;
         ICTransferBarcode.requestFocus();
         ICTransferBarcode.setOnKeyListener(new View.OnKeyListener() {

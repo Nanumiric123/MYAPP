@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
@@ -11,6 +10,7 @@
         <entry key="..\:/Users/ikhsan/AndroidStudioProjects/MPP/MyApplication/app/src/main/res/layout/activity_p04.xml" value="0.5" />
         <entry key="..\:/Users/ikhsan/AndroidStudioProjects/MPP/MyApplication/app/src/main/res/layout/activity_p08.xml" value="0.5" />
         <entry key="..\:/Users/ikhsan/AndroidStudioProjects/MPP/MyApplication/app/src/main/res/layout/activity_p09.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/ikhsan/AndroidStudioProjects/MPP/MyApplication/app/src/main/res/layout/activity_t30.xml" value="0.5" />
         <entry key="..\:/Users/ikhsan/AndroidStudioProjects/MPP/MyApplication/app/src/main/res/layout/activity_t32.xml" value="0.33" />
         <entry key="..\:/Users/ikhsan/AndroidStudioProjects/MPP/MyApplication/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1685" />
         <entry key="..\:/Users/ikhsan/AndroidStudioProjects/MPP/MyApplication/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.1685" />
@@ -64,7 +64,7 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="jbr-17" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

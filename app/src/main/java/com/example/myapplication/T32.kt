@@ -35,13 +35,15 @@ class T32 : AppCompatActivity() {
     private var btnSave:Button by Delegates.notNull<Button>()
     private var btnClr:Button by Delegates.notNull<Button>()
     private var btnMenu:Button by Delegates.notNull<Button>()
+    private lateinit var bNum:String
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_t32)
         var inT32_StorageBin:EditText = findViewById(R.id.in_T32StorageBin)
         edT32StoreKanban = findViewById(R.id.ed_T32StoreKanban)
-
+        bNum = intent.getStringExtra("Badge").toString()
         var edT32ProdKanban:EditText = findViewById(R.id.in_T32ProdKanban)
         btnSave = findViewById(R.id.btnT32Save)
         btnClr = findViewById(R.id.btnT32Clear)
@@ -100,9 +102,9 @@ class T32 : AppCompatActivity() {
 
     }
     private fun clearInputs() {
-        var inT32_StorageBin:EditText = findViewById(R.id.in_T32StorageBin)
-        var edT32ProdKanban:EditText = findViewById(R.id.in_T32ProdKanban)
-            inT32_StorageBin.text.clear()
+       var inT32_StorageBin:EditText = findViewById(R.id.in_T32StorageBin)
+       var edT32ProdKanban:EditText = findViewById(R.id.in_T32ProdKanban)
+        inT32_StorageBin.text.clear()
         edT32StoreKanban.text.clear()
         edT32ProdKanban.text.clear()
 
@@ -144,7 +146,6 @@ class T32 : AppCompatActivity() {
                 })
 
                 var intent: Intent = intent
-                var BdgeNum = intent.getStringExtra(MainActivity.EXTRA_MESSAGE)
                 var stBin = inT32_StorageBin.text.toString()
                 var loc = prodKanban.split('$')[1]
                 var mat:String = ""
@@ -156,7 +157,7 @@ class T32 : AppCompatActivity() {
                     mat = gMaterial
                 }
 
-                var urlLink: String = "http://172.16.206.19/REST_API/Second/MPPsubmitToSAPT32?binNo=${stBin}&kanbanMaterial=${mat}&location=${loc}&badgeNum=${BdgeNum}"
+                var urlLink: String = "http://172.16.206.19/REST_API/Second/MPPsubmitToSAPT32?binNo=${stBin}&kanbanMaterial=${mat}&location=${loc}&badgeNum=${bNum}"
                 var url:URL = URL(urlLink)
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "GET"

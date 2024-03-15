@@ -198,7 +198,7 @@ class P04 : AppCompatActivity() {
     suspend fun saveDoc(con:Context) = withContext(Dispatchers.IO){
         val materialNum:String = tvPartNum.text.toString().trim()
         val grQty:String = etQty.text.toString().trim()
-        val b_num = intent.getStringExtra(MainActivity.EXTRA_MESSAGE)
+        val b_num = intent.getStringExtra("badge")
         val fromSloc:String = etFromSloc.text.toString().trim()
         val toSloc:String = etToSloc.text.toString().trim()
         val batchNum:String = tvBatch.text.toString().trim()
