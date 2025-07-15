@@ -64,7 +64,7 @@
     <string name="http_172_16_206_19_rest_api_smt_ekanban_services_breakbarcodetoarray_barcode">http://172.16.206.19/REST_API/SMT_EKANBAN_SERVICES/BreakBarcodeToArray?barcode=%1$s</string>
     <string name="item_barcode">Item Barcode</string>
     <string name="part">Part</string>
-    <string name="uom">uom</string>
+    <string name="uom">Uom</string>
     <string name="part_on_kanban">Part on Kanban</string>
     <string name="p01_gr_for_smt_prod">P01:GR for SMT Prod</string>
     <string name="po_barcode">PO Barcode</string>
@@ -90,6 +90,28 @@
     <string name="material_scanned_para">Material Scanned : %1s</string>
     <string name="reservation_no">Reservation No</string>
     <string name="generate">Generate</string>
+    <string name="t50_scan_from_rack_to_bin">T50 : Scan from Rack to Bin</string>
+    <string name="std_bin_type">Std Bin Type</string>
+    <string name="kanban_quantity">Kanban Quantity</string>
+    <string name="title">title</string>
+    <string name="trolley">Trolley</string>
+    <string name="trolley_number">Trolley Number</string>
+    <string name="total_items_to_transfer">Total Items to Transfer : 0</string>
+    <string name="STtotal_items_to_transfer">Total items to transfer : %1$s</string>
+    <string name="v_002">002</string>
+    <string name="A0_str">A0</string>
+    <string name="H0_str">H0</string>
+    <string name="register_new_bin_partition">Register New Bin &amp; Partition</string>
+    <string name="new_issue_bin_or_partition">New Issue Bin or Partition</string>
+    <string name="current_date">Current Date : %1$s</string>
+    <string name="bin_partition_scrap">Bin &amp; Partition Scrap</string>
+    <string name="bin_partition_issue">Bin &amp; Partition Issue</string>
+    <string name="po_gr_area">PO-GR-Area</string>
+    <string name="before_iqa">BEFORE-IQA</string>
+    <string name="after_iqa">AFTER-IQA</string>
+    <string name="prefered_location">Prefered Location :</string>
+    <string name="carton_number_lbl">Carton Number :</string>
+    <string name="do_number">DO Number</string>
 
     <string-array name="Stock_Status">
         <item>Warehouse</item>
@@ -97,5 +119,22 @@
         <item>Wrhse/QuInsp.(InvSa)</item>
         <item>Blocked</item>
     </string-array>
-
+    <string-array name="Dimension">
+        <item>CCM</item>
+        <item>&quot;3</item>
+        <item>CD3</item>
+        <item>CL</item>
+        <item>FOZ</item>
+        <item>FT3</item>
+        <item>GAL</item>
+        <item>HL</item>
+        <item>L</item>
+        <item>M3</item>
+        <item>ML</item>
+        <item>MM3</item>
+        <item>PT</item>
+        <item>QT</item>
+        <item>YD3</item>
+        <item>&#181;L</item>
+    </string-array>
 </resources>

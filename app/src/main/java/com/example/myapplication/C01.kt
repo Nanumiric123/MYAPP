@@ -11,11 +11,18 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
 import java.net.URL
 
 class C01 : AppCompatActivity() {
@@ -34,6 +41,11 @@ class C01 : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_c01)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         titleTV = findViewById(R.id.C01TVTITLE)
         spStockType = findViewById(R.id.C01SPSS)
         invDoc  = findViewById(R.id.C01EDInvDoc)
@@ -62,12 +74,18 @@ class C01 : AppCompatActivity() {
                 keyCode == KeyEvent.KEYCODE_TAB && event.action == KeyEvent.ACTION_DOWN) {
                 //Perform Code
                 if(invDoc.text.contains('$')){
+                    runOnUiThread(Runnable{
+                        item.isEnabled = false
+                    })
 
 
                 var tagString = invDoc.text.split('$')
 
                 invDoc.setText(tagString[0])
                 uniqueID.setText(tagString[1])
+                    runOnUiThread(Runnable{
+                        item.isEnabled = true
+                    })
                 item.requestFocus()
                 }
                 else{
@@ -109,12 +127,22 @@ class C01 : AppCompatActivity() {
             }
 
             var result = String()
-            runBlocking {
-                val job = GlobalScope.launch {
-                    result = sendToDb(item.text.toString(),qty.text.toString(),bNum,invDoc.text.toString(),uniqueID.text.toString(),"",SS)
+            CoroutineScope(Dispatchers.IO).launch{
+                if(checkForduplicates()){
+                    runOnUiThread(kotlinx.coroutines.Runnable {
+                        triggerAlert("Message","Duplicated")
+                        progressbar_setting(pb)
+                    })
                 }
-                job.join()
-                triggerAlert("Message",result)
+                else{
+                    result = sendToDb(item.text.toString(),qty.text.toString(),bNum,invDoc.text.toString(),uniqueID.text.toString(),"",SS)
+                    runOnUiThread(kotlinx.coroutines.Runnable {
+                        triggerAlert("Message",result)
+                    })
+                }
+
+
+
             }
         }
 
@@ -152,6 +180,29 @@ class C01 : AppCompatActivity() {
         })
     }
 
+    private suspend fun checkForduplicates():Boolean{
+        var result:Boolean = false
+
+        withContext(Dispatchers.IO){
+            var url = URL("http://172.16.206.19/BARCODEWEBAPI/api/INVENTORY?material=${item.text.toString()}&invdoc=${invDoc.text.toString()}")
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "GET"
+            val responseCode = connection.responseCode
+            val response = StringBuilder()
+
+            BufferedReader(InputStreamReader(connection.inputStream)).use { reader ->
+                var inputLine: String?
+                while (reader.readLine().also { inputLine = it } != null) {
+                    response.append(inputLine)
+                }
+
+            }
+            result = response.toString().toBoolean()
+            connection.disconnect()
+        }
+        return result
+    }
+
     private suspend fun sendToDb(material:String,quantity:String,badgeNum:String,invNum:String,uniqueNum:String,strLoc:String,stockStats:String):String{
         var linkStr = "http://172.16.206.19/REST_API/Third/MPPInsertPIIM?material=${material}&qty=${quantity}&badgeno=${badgeNum}&InvDoc=${invNum}&" +
                 "uniqueID=${uniqueNum}&stockStat=${stockStats}&countType=1&storageLoc=${strLoc}"
@@ -161,6 +212,12 @@ class C01 : AppCompatActivity() {
         }
         progressbar_setting(pb)
         return result
+    }
+
+    private suspend fun updateResultToDB(){
+        withContext(Dispatchers.IO){
+            
+        }
     }
 
 }

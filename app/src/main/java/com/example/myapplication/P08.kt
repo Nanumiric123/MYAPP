@@ -12,20 +12,22 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import kotlinx.coroutines.*
+import kotlinx.coroutines.Runnable
 import org.json.JSONArray
 import org.json.JSONTokener
 import java.net.URL
 import kotlin.properties.Delegates
 
-var btnClear: Button by Delegates.notNull<Button>()
-var btnSave: Button by Delegates.notNull<Button>()
-var etFromLoc: EditText by Delegates.notNull<EditText>()
-var tvPartNum: TextView by Delegates.notNull<TextView>()
-var etFromBin: EditText by Delegates.notNull<EditText>()
-var tvBatch: EditText by Delegates.notNull<EditText>()
-var progressBar08: ProgressBar by Delegates.notNull<ProgressBar>()
 
 class P08 : AppCompatActivity() {
+    var btnClear: Button by Delegates.notNull<Button>()
+    var btnSave: Button by Delegates.notNull<Button>()
+    var etFromLoc: EditText by Delegates.notNull<EditText>()
+    var tvPartNum: TextView by Delegates.notNull<TextView>()
+    var etFromBin: EditText by Delegates.notNull<EditText>()
+    var tvBatch: EditText by Delegates.notNull<EditText>()
+    var progressBar08: ProgressBar by Delegates.notNull<ProgressBar>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_p08)
@@ -38,8 +40,6 @@ class P08 : AppCompatActivity() {
         btnClear = findViewById(R.id.P08_btn_clear)
         progressBar08 = findViewById(R.id.P08_pb)
 
-        val binNo: Editable? = etFromBin.text
-        val fromLoc: Editable? = etFromLoc.text
 
         etFromBin.requestFocus()
         etFromBin.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
@@ -55,14 +55,14 @@ class P08 : AppCompatActivity() {
         val c:Context = this
         btnSave.setOnClickListener {
 
-            if(binNo.toString() != ""){
-                if(fromLoc.toString() != ""){
+            if(etFromLoc.text.toString() != ""){
+                if(etFromLoc.text.toString() != ""){
                     //SumbitP08(fromLoc.toString(),binNo.toString(),this)
 
                     runBlocking {
                         GlobalScope.launch {
                             progressbarSetting(progressBar08)
-                            saveDoc(fromLoc.toString(),binNo.toString(),c)
+                            saveDoc(etFromLoc.text.toString(),etFromBin.text.toString(),c)
                             progressbarSetting(progressBar08)
                         }
                     }
@@ -96,7 +96,7 @@ class P08 : AppCompatActivity() {
                 keyCode == KeyEvent.KEYCODE_TAB && event.action == KeyEvent.ACTION_DOWN) {
                 //Perform Code
                 try{
-                    getDetailFromBin(fromLoc.toString(),binNo.toString(),this)
+                    getDetailFromBin(etFromLoc.text.toString(),etFromBin.text.toString(),this)
 
 
                 }
@@ -118,10 +118,15 @@ class P08 : AppCompatActivity() {
 
 
     private fun clearAll(){
-        tvPartNum.text = null
-        tvBatch.text = null
-        etFromBin.setText(null)
-        etFromLoc.setText(null)
+        runOnUiThread(Runnable {
+        tvPartNum.setText("")
+        tvBatch.setText("")
+        etFromBin.setText("")
+        etFromLoc.setText("")
+
+            etFromBin.requestFocus()
+        })
+
     }
 
     private fun getDetailFromBin(storLoc:String,binNum:String,con: Context) = runBlocking{

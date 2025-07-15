@@ -71,8 +71,8 @@
                 <ProgressBar
                     android:id="@+id/progressBar"
                     style="?android:attr/progressBarStyle"
-                    android:layout_width="106dp"
-                    android:layout_height="77dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:visibility="invisible"
                     tools:visibility="visible" />

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/main"
     tools:context=".T07">
 
     <FrameLayout
@@ -81,6 +82,14 @@
                                 android:layout_weight="1"
                                 android:text="Area C" />
 
+                            <Button
+                                android:id="@+id/btnAreaD"
+                                android:layout_width="match_parent"
+                                android:layout_height="100dp"
+                                android:layout_margin="10dp"
+                                android:layout_weight="1"
+                                android:text="Area D" />
+
                         </LinearLayout>
 
                         <LinearLayout
@@ -89,20 +98,20 @@
                             android:orientation="horizontal">
 
                             <Button
-                                android:id="@+id/btnAreaD"
-                                android:layout_width="170dp"
-                                android:layout_height="100dp"
-                                android:layout_margin="10dp"
-                                android:layout_weight="1"
-                                android:text="Area D" />
-
-                            <Button
                                 android:id="@+id/btnAreaE"
-                                android:layout_width="170dp"
+                                android:layout_width="match_parent"
                                 android:layout_height="100dp"
                                 android:layout_margin="10dp"
                                 android:layout_weight="1"
                                 android:text="Area E" />
+
+                            <Button
+                                android:id="@+id/BtnQTF"
+                                android:layout_width="match_parent"
+                                android:layout_height="100dp"
+                                android:layout_margin="10dp"
+                                android:layout_weight="1"
+                                android:text="QTF ITEM" />
 
                         </LinearLayout>
 

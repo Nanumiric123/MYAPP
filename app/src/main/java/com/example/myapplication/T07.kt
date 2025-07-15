@@ -15,6 +15,8 @@ import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
 import java.net.URL
 import android.provider.Settings
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -33,6 +35,7 @@ class T07 : AppCompatActivity() {
     private lateinit var currentArea:String
     private lateinit var c:Context
     private lateinit var deviceID:String
+    private lateinit var btnQTF:Button
 
 
     override fun onDestroy() {
@@ -44,11 +47,17 @@ class T07 : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_t07)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         btnAreaA = findViewById(R.id.btnAreaA)
         btnAreaB = findViewById(R.id.btnAreaB)
         btnAreaC = findViewById(R.id.btnAreaC)
         btnAreaD = findViewById(R.id.btnAreaD)
         btnAreaE = findViewById(R.id.btnAreaE)
+        btnQTF = findViewById(R.id.BtnQTF)
         mainLayout = findViewById(R.id.t07mainLayout)
         g_badgeNum = intent.getStringExtra("Badge").toString()
         title = findViewById(R.id.T07tvtitle)
@@ -57,19 +66,61 @@ class T07 : AppCompatActivity() {
         deviceID = getDeviceUniqueId(this@T07)
         c = this
         btnAreaA.setOnClickListener {
-            checkUpdateUsage("A")
+            try {
+                checkUpdateUsage("A")
+            }
+            catch (e:Exception){
+                Toast.makeText(c, e.message.toString(), Toast.LENGTH_SHORT).show()
+            }
+
         }
         btnAreaB.setOnClickListener {
-            checkUpdateUsage("B")
+            try {
+                checkUpdateUsage("B")
+            }
+            catch (e:Exception){
+                Toast.makeText(c, e.message.toString(), Toast.LENGTH_SHORT).show()
+            }
+
         }
         btnAreaC.setOnClickListener {
-            checkUpdateUsage("C")
+            try {
+                checkUpdateUsage("C")
+            }
+            catch (e:Exception){
+                Toast.makeText(c, e.message.toString(), Toast.LENGTH_SHORT).show()
+            }
+
         }
         btnAreaD.setOnClickListener {
-            checkUpdateUsage("D")
+            try {
+                checkUpdateUsage("D")
+            }
+            catch (e:Exception){
+                Toast.makeText(c, e.message.toString(), Toast.LENGTH_SHORT).show()
+            }
+
         }
         btnAreaE.setOnClickListener {
-            checkUpdateUsage("E")
+            try {
+                checkUpdateUsage("E")
+            }
+            catch (e:Exception){
+                Toast.makeText(c, e.message.toString(), Toast.LENGTH_SHORT).show()
+            }
+
+        }
+
+        btnQTF.setOnClickListener {
+            val classText = "com.example.myapplication.T07_QTF"
+            val className = Class.forName(classText)
+            var newAreaActivityIntent = Intent(c,className)
+            newAreaActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            newAreaActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            newAreaActivityIntent.putExtra("Area", "QTF_TEMP Area")
+            newAreaActivityIntent.putExtra("Badge", g_badgeNum)
+            startActivity(newAreaActivityIntent)
+
         }
 
 

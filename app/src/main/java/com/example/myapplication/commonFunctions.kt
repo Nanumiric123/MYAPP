@@ -12,6 +12,7 @@ import android.widget.LinearLayout
 import android.widget.TableRow
 import android.widget.Toast
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.ViewCompat
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -23,13 +24,13 @@ import java.net.URL
 
 class commonFunctions {
     var rowParams: TableRow.LayoutParams = TableRow.LayoutParams(
-        TableRow.LayoutParams.WRAP_CONTENT,
-        TableRow.LayoutParams.WRAP_CONTENT
+        TableRow.LayoutParams.MATCH_PARENT,
+        TableRow.LayoutParams.MATCH_PARENT
     )
     fun createLinearLayout(btn: EditText, c:Context): LinearLayout {
         val layoutBtn = LinearLayout(c)
         with(layoutBtn) {
-            id = ViewCompat.generateViewId()
+            id = View.generateViewId()
             layoutParams = rowParams
             gravity = Gravity.CENTER
             setBackgroundResource(R.drawable.cell_with_border)
@@ -39,6 +40,17 @@ class commonFunctions {
         return layoutBtn
     }
 
+    fun generateRow(c:Context):TableRow{
+        val row = TableRow(c)
+        with(rowParams){
+            weight = 1F
+        }
+        row.layoutParams = TableRow.LayoutParams(rowParams)
+        row.id = View.generateViewId()
+
+        return row
+
+    }
 
     fun generateTVforRow(ptxt:String,c: Context): View {
         val generateTV = TextView(c)
@@ -59,27 +71,34 @@ class commonFunctions {
     }
 
      fun translateJsonStringToList(datafromDB:String):MutableList<dataRequestor>{
-        var finalResult:MutableList<dataRequestor> = mutableListOf()
-        var arrObj = JSONTokener(datafromDB).nextValue() as JSONArray
+         var finalResult:MutableList<dataRequestor> = mutableListOf()
+         try {
+             var arrObj = JSONTokener(datafromDB).nextValue() as JSONArray
 
-        for(i in 0 until arrObj.length()) {
-            var pullListNumber = arrObj.getJSONObject(i).getString("PULLLIST")
-            var objectList = arrObj.getJSONObject(i).getJSONArray("List")
-            var tempList:MutableList<listData> = mutableListOf()
-            for (j in 0 until objectList.length() ) {
-                var OBJlIST = JSONTokener(objectList[j].toString()).nextValue() as JSONObject
-                var temp = listData(ID = OBJlIST.getInt("ID"),
-                    MATERIAL = OBJlIST.getString("MATERIAL"),
-                    LOCATION = OBJlIST.getString("LOCATION"),
-                    QUANTITY = OBJlIST.getInt("QUANTITY"),
-                    REQUESTOR = OBJlIST.getString("REQUESTOR"),
-                    PULLLISTNUMBER = OBJlIST.getString("PULLLIST_NUMBER"),
-                    MACHINE_NO = OBJlIST.getString("MACHINE_NO")
-                )
-                tempList.add(temp)
-            }
-            finalResult.add(dataRequestor(PULLLIST = pullListNumber, listData = tempList))
-        }
+             for(i in 0 until arrObj.length()) {
+                 var pullListNumber = arrObj.getJSONObject(i).getString("PULLLIST")
+                 var objectList = arrObj.getJSONObject(i).getJSONArray("List")
+                 var tempList:MutableList<listData> = mutableListOf()
+                 for (j in 0 until objectList.length() ) {
+                     var OBJlIST = JSONTokener(objectList[j].toString()).nextValue() as JSONObject
+                     var temp = listData(ID = OBJlIST.getInt("ID"),
+                         MATERIAL = OBJlIST.getString("MATERIAL"),
+                         LOCATION = OBJlIST.getString("LOCATION"),
+                         QUANTITY = OBJlIST.getInt("QUANTITY"),
+                         REQUESTOR = OBJlIST.getString("REQUESTOR"),
+                         PULLLISTNUMBER = OBJlIST.getString("PULLLIST_NUMBER"),
+                         MACHINE_NO = OBJlIST.getString("MACHINE_NO")
+                     )
+                     tempList.add(temp)
+                 }
+                 finalResult.add(dataRequestor(PULLLIST = pullListNumber, listData = tempList))
+             }
+         }
+         catch (e:Exception){
+
+         }
+
+
 
         return finalResult
     }
@@ -136,6 +155,33 @@ class commonFunctions {
             USAGE = usage,
             BADGE = badge
         )
+    }
+
+    fun showMessage(context: Context, title: String, message: String,positiveButtonText: String,positiveButtonAction: () -> Unit):AlertDialog{
+        return AlertDialog.Builder(context)
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton(positiveButtonText) { dialog, which ->
+                positiveButtonAction()
+            }
+            .create()
+    }
+    // Function to show a dialog box
+    fun showDialog(context: Context, title: String, message: String,positiveButtonText: String,
+                   negativeButtonText: String,
+                   positiveButtonAction: () -> Unit,
+                   negativeButtonAction: () -> Unit):AlertDialog {
+        return AlertDialog.Builder(context)
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton(positiveButtonText) { dialog, which ->
+                positiveButtonAction()
+            }
+            .setNegativeButton(negativeButtonText) { dialog, which ->
+                negativeButtonAction()
+            }
+            .create()
+
     }
 
 }

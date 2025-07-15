@@ -11,6 +11,8 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import kotlinx.coroutines.*
 import org.json.JSONArray
 import org.json.JSONObject
@@ -36,7 +38,11 @@ class P04 : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_p04)
-
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         btnMenu = findViewById(R.id.p04_menu)
         btnClear = findViewById(R.id.p04_clear)
         btnSave = findViewById(R.id.p04_save)
@@ -198,7 +204,7 @@ class P04 : AppCompatActivity() {
     suspend fun saveDoc(con:Context) = withContext(Dispatchers.IO){
         val materialNum:String = tvPartNum.text.toString().trim()
         val grQty:String = etQty.text.toString().trim()
-        val b_num = intent.getStringExtra("badge")
+        val b_num = intent.getStringExtra("Badge").toString()
         val fromSloc:String = etFromSloc.text.toString().trim()
         val toSloc:String = etToSloc.text.toString().trim()
         val batchNum:String = tvBatch.text.toString().trim()
@@ -228,9 +234,11 @@ class P04 : AppCompatActivity() {
             })
 
         }
+        runOnUiThread(kotlinx.coroutines.Runnable {
+            btnClear.performClick()
+            etFromSloc.requestFocus()
+        })
 
-        btnClear.performClick()
-        etFromSloc.requestFocus()
     }
 
 }

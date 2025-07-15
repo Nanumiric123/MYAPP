@@ -1,28 +1,37 @@
 package com.example.myapplication
 
-import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.Settings.Global
-import android.telephony.TelephonyManager
 import android.view.KeyEvent
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.core.app.ActivityCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
 import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
 import java.net.URL
+import androidx.core.graphics.toColorInt
+import androidx.core.graphics.drawable.toDrawable
+import java.io.DataOutputStream
 
 class T30 : AppCompatActivity() {
     private lateinit var menuBtn:Button
@@ -39,14 +48,22 @@ class T30 : AppCompatActivity() {
     private lateinit var c:Context
     private lateinit var cartonNum:String
     private lateinit var pb:ProgressBar
-
+    private lateinit var cf:commonFunctions
+    private lateinit var statusInd: TextView
+    //green #6db261
+    //red #d24e4e
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_t30)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         menuBtn = findViewById(R.id.T30btnMenu)
         clearBtn = findViewById(R.id.T30btnClear)
         saveBtn = findViewById(R.id.T30btnSave)
-
+        cf = commonFunctions()
         barcodeInput = findViewById(R.id.T30EDbarcode)
         partInput = findViewById(R.id.T30edPart)
         uomInput = findViewById(R.id.T30edUom)
@@ -56,6 +73,7 @@ class T30 : AppCompatActivity() {
         batchInput = findViewById(R.id.T30edBatch)
         fromBinInput = findViewById(R.id.T30edFromBin)
         toBinInput = findViewById(R.id.T30edToBin)
+        statusInd = findViewById(R.id.T30STATUSIND)
         pb = findViewById(R.id.T30PB)
         val Bnum = intent.getStringExtra("Badge").toString()
         c = this
@@ -68,9 +86,6 @@ class T30 : AppCompatActivity() {
             clearEverything()
         }
 
-        saveBtn.setOnClickListener {
-
-        }
         barcodeInput.requestFocus()
 
         barcodeInput.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
@@ -80,18 +95,45 @@ class T30 : AppCompatActivity() {
                 progressbar_setting(pb)
                 runBlocking {
                     GlobalScope.launch {
-                        var barcodeResult = breakBarcodeToString(barcodeInput.text.toString())
-                        partInput.setText(barcodeResult.PART_NO)
-                        if (barcodeResult.PART_NO.isNotBlank() &&qtyInput.text.isBlank()){
-                            var qty = getQtyPerBin(barcodeResult.PART_NO)
-                            qtyInput.setText(qty.toString())
+                        val barcodeResult = breakBarcodeToString(barcodeInput.text.toString())
+
+                        if (barcodeResult.PART_NO.isNullOrBlank() && barcodeResult.LOT.isNullOrBlank()){
+                            runOnUiThread(kotlinx.coroutines.Runnable{
+                                val dialog = cf.showMessage(c,"ERROR","ERROR, SCAN AGAIN","OK", positiveButtonAction = {
+                                    barcodeInput.requestFocus()
+                                    barcodeInput.text.clear()
+                                    statusInd.text = "ERROR, SCAN AGAIN"
+                                    statusInd.setTextColor(Color.RED)
+                                })
+                                dialog.show()
+                                // Set background color AFTER show()
+                                dialog.window?.setBackgroundDrawable(
+                                    ColorDrawable(
+                                        Color.parseColor(
+                                            "#d24e4e"
+                                        )
+                                    )
+                                )
+                            })
+
                         }
-                        batchInput.setText(barcodeResult.LOT)
-                        cartonNum = barcodeResult.REEL_NO
+                        else{
+                            runOnUiThread(kotlinx.coroutines.Runnable{
+                                var qty = getQtyPerBin(barcodeResult.PART_NO)
+                                qtyInput.setText(qty.toString())
+                                partInput.setText(barcodeResult.PART_NO)
+                                batchInput.setText(barcodeResult.LOT)
+                                cartonNum = barcodeResult.REEL_NO
+                                partOnKBInput.requestFocus()
+
+                            })
+
+                        }
+
                     }
                 }
 
-                partOnKBInput.requestFocus()
+
                 return@OnKeyListener true
             }
             false
@@ -115,14 +157,14 @@ class T30 : AppCompatActivity() {
                             toBinInput.requestFocus()
                         }
                         else{
-                            triggerAlert("Error","WI Problem cannot update WI")
+                            triggerAlert("Error","WI Problem cannot update WI","#d24e4e")
                         }
                     }
 
 
                 }
                 else{
-                    triggerAlert("Error","Kanban and Carton not same")
+                    triggerAlert("Error","Kanban and Carton not same","#d24e4e")
                 }
                 return@OnKeyListener true
             }
@@ -133,7 +175,46 @@ class T30 : AppCompatActivity() {
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN ||
                 keyCode == KeyEvent.KEYCODE_TAB && event.action == KeyEvent.ACTION_DOWN) {
                 //Perform Code
+                CoroutineScope(Dispatchers.IO).launch{
+                    try {
+                        withContext(Dispatchers.Main){
+                            progressbar_setting(pb)
+                        }
+                        val matInBin = itemInBin(toBinInput.text.toString())
+                        if (!matInBin.isNullOrBlank()){
+                            withContext(Dispatchers.Main){
+                                var dialog = cf.showDialog(c,"Warning","Bin ${toBinInput.text.toString()} contains item ${matInBin}, Confirm transfer?","Yes","No"
+                                    , positiveButtonAction = {
+                                        statusInd.setTextColor(Color.parseColor("#e1dd56"))
+                                        statusInd.text = "Bin ${toBinInput.text.toString()} contains item ${matInBin}"
+                                }
+                                , negativeButtonAction = {
+                                        clearEverything()
+                                        barcodeInput.requestFocus()
+                                        statusInd.setTextColor(Color.parseColor("#e1dd56"))
+                                        statusInd.text = "Bin ${toBinInput.text.toString()} contains item ${matInBin}"
+                                    })
+                                dialog.show()
+                                dialog.window?.setBackgroundDrawable(ColorDrawable(Color.parseColor("#e1dd56")))
+                            }
+                        }
+                    }
+                    catch(ex: Exception){
+                        withContext(Dispatchers.Main){
+                            var dialog = cf.showMessage(c,"Error",ex.message.toString(),"OK", positiveButtonAction = {
 
+                            })
+                            dialog.show()
+                            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.parseColor("#d24e4e")))
+                        }
+                    }
+                    finally {
+                        withContext(Dispatchers.Main){
+                            progressbar_setting(pb)
+                        }
+
+                    }
+                }
                 return@OnKeyListener true
             }
             false
@@ -141,23 +222,94 @@ class T30 : AppCompatActivity() {
 
         saveBtn.setOnClickListener {
             var deviceID = Build.ID
-            var message = String()
-            progressbar_setting(pb)
-            runBlocking {
-                val job = GlobalScope.launch {
+
+            CoroutineScope(Dispatchers.Main).launch {
+                var message = String()
+                if(checkCartonQty(partInput.text.toString(),cartonNum,qtyInput.text.toString(),batchInput.text.toString())){
+                    withContext(Dispatchers.Main){
+
+                        triggerAlert("Error","Carton quantity is empty","#d24e4e")
+                    }
+                }
+                else{
                     message = sendToSAP(fromBinInput.text.toString(),toBinInput.text.toString(),
                         partInput.text.toString(),Bnum,batchInput.text.toString(),qtyInput.text.toString(),
                         deviceID,
                         cartonNum)
-                }
-                job.join()
-                var messageSplit  = message.split(':')
+                    withContext(Dispatchers.Main){
+                        var messageSplit  = message.split(':')
+                        barcodeInput.text.clear()
+                        if(messageSplit[0].contains('E') || messageSplit[0].contains('F')){
+                            val jsonObj = JSONObject(message)
+                            triggerAlert(jsonObj.getString("type"),jsonObj.getString("message"),"#d24e4e")
 
-                triggerAlert(messageSplit[0],messageSplit[1])
+                        }
+                        else{
+                            val jsonObj = JSONObject(message)
+                            statusInd.setTextColor(Color.parseColor("#2DAB28"))
+                            statusInd.text = "Success : ${jsonObj.getString("message")}"
+                            clearEverything()
+                        }
+
+                    }
+                }
+
+            }
+        }
+
+
+    }
+    private suspend fun itemInBin(BinNum:String): String{
+        return withContext(Dispatchers.IO){
+            val linkURL = URL("http://172.16.206.19/REST_API/Second/Q01StorageBin?storageBin=$BinNum")
+            val urlText = linkURL.readText()
+            val jsonArray = JSONArray(urlText)
+            if(jsonArray.length() >= 1){
+                val JSONresult = jsonArray.getJSONObject(0)
+                JSONresult.getString("MATERIAL")
+            }
+            else{
+                ""
             }
 
         }
+    }
 
+    private suspend fun breakBarcodeToString(bc:String):barcodeData{
+        var result = barcodeData("","","","","","","")
+
+        try{
+            withContext(Dispatchers.IO){
+                var jsonOBJ = JSONObject()
+                val linkUrl = URL("http://172.16.206.19/REST_API/Home/breAKBarcodeString?barcode=${bc}")
+                val urlText = linkUrl.readText()
+                try {
+                    jsonOBJ = JSONObject(urlText)
+                    result = barcodeData(jsonOBJ.getString("VENDOR"),jsonOBJ.getString("DATE")
+                        ,jsonOBJ.getString("PART_NO"),jsonOBJ.getString("REEL_NO"),jsonOBJ.getString("LOT"),
+                        jsonOBJ.getString("QUANTITY"),jsonOBJ.getString("UOM"))
+                }
+                catch (ex: Exception){
+
+                }
+                finally {
+
+                }
+
+            }
+
+        }
+        catch (ex:Exception){
+            Toast.makeText(c, ex.message.toString(), Toast.LENGTH_SHORT).show()
+        }
+        finally{
+            withContext(Dispatchers.Main){
+                progressbar_setting(pb)
+            }
+
+
+        }
+        return result
 
     }
     private fun progressbar_setting(v:View){
@@ -193,6 +345,55 @@ class T30 : AppCompatActivity() {
         return res.toInt()
     }
 
+    private suspend fun checkCartonQty(mat:String,cartonNum:String,inputQty:String,batchNo:String): Boolean{
+        var result = String()
+        var materialNumber = String()
+
+        materialNumber = if(mat.contains('+')){
+            mat.replace("+","%2B")
+        } else{
+            mat
+        }
+        return withContext(Dispatchers.IO){
+            val url = URL("http://172.16.206.19/FORD_SYNC/API/T30?material=${materialNumber}&cartonNo=${cartonNum}&batch=${batchNo}&qty=${inputQty}")
+            val connection = url.openConnection() as HttpURLConnection
+
+            // Optional: Set request method to GET (GET is the default)
+            connection.requestMethod = "GET"
+            withContext(Dispatchers.Main){
+                progressbar_setting(pb)
+            }
+            try{
+                // Get response
+                val responseCode = connection.responseCode
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    // Read response
+                    val inputStream = BufferedReader(InputStreamReader(connection.inputStream))
+                    var inputLine: String?
+                    val response = StringBuffer()
+
+                    while (inputStream.readLine().also { inputLine = it } != null) {
+                        response.append(inputLine)
+                    }
+                    response.toString().toBoolean()
+                }
+                else {
+                    true
+                }
+
+            }
+            catch(e:Exception){
+                true
+            }
+            finally {
+                withContext(Dispatchers.Main){
+                    progressbar_setting(pb)
+                }
+                connection.disconnect()
+            }
+        }
+    }
+
     private suspend fun UpdateWI(mat:String,badge:String):String{
         var linkStr = "http://172.16.206.19/REST_API/Third/InsertWI?newMaterial=${mat}&badgeNum=${badge}"
 
@@ -220,54 +421,88 @@ class T30 : AppCompatActivity() {
         fromBin: String, toBin: String, pMaterial: String, badge: String, batchNum: String,
         quantity: String, deviceImei: String, cartonNumber: String
     ): String {
+
         var finalResult = ""
-        var link =
-            "http://172.16.206.19/REST_API/Third/MPPT30SubmitData?fromBIN=${fromBin}&toBin=${toBin}&material=${pMaterial}&badgeno=${badge}&lotNo=${batchNum}" +
-                    "&qty=${quantity}&iMeiNo=${deviceImei}&cartonNum=${cartonNumber}"
-        withContext(Dispatchers.Default){
-            var urlLink = URL(link)
-            finalResult = urlLink.readText()
+        val payLoad = "{\n" +
+                "  \"froM_BIN\": \"${fromBin}\",\n" +
+                "  \"tO_BIN\": \"${toBin}\",\n" +
+                "  \"material\": \"${pMaterial}\",\n" +
+                "  \"badgE_ID\": \"${badge}\",\n" +
+                "  \"batcH_NO\": \"${batchNum}\",\n" +
+                "  \"quantity\": ${quantity},\n" +
+                "  \"devicE_NO\": \"${deviceImei}\",\n" +
+                "  \"cartoN_NO\": \"${cartonNumber}\"\n" +
+                "}"
+        withContext(Dispatchers.IO){
+            try{
+
+                withContext(Dispatchers.Main){
+                    progressbar_setting(pb)
+                }
+                val RESTUrl = URL("http://172.16.206.19/FORD_SYNC/API/T30")
+                val connection = RESTUrl.openConnection() as HttpURLConnection
+                // Set request method to POST
+                connection.requestMethod = "POST"
+                // Enable output for sending data
+                connection.doOutput = true
+                // Set request headers
+                connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8")
+                connection.setRequestProperty("Accept", "application/json")
+                // Write JSON data to the connection output stream
+                val wr = DataOutputStream(connection.outputStream)
+                wr.write(payLoad.toByteArray(Charsets.UTF_8))
+                wr.flush()
+                wr.close()
+                // Get response
+                val responseCode = connection.responseCode
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    // Read response
+                    val inputStream = BufferedReader(InputStreamReader(connection.inputStream))
+                    var inputLine: String?
+                    val response = StringBuffer()
+                    while (inputStream.readLine().also { inputLine = it } != null) {
+                        response.append(inputLine)
+                    }
+                    inputStream.close()
+                    finalResult = response.toString()
+                }
+                else{
+                    finalResult = "F:INTERNAL SERVER ERROR CODE : $responseCode"
+                }
+                connection.disconnect()
+            }
+
+            catch(ex: Exception){
+                finalResult = "F:${ex.message.toString()}"
+            }
+            finally {
+                withContext(Dispatchers.Main){
+                    progressbar_setting(pb)
+                }
+            }
+
         }
-        progressbar_setting(pb)
+
 
         return finalResult
 
     }
 
-    private suspend fun breakBarcodeToString(bc:String):barcodeData{
-        var result = barcodeData("","","","","","","")
-
-        try{
-            withContext(Dispatchers.Default){
-                var jsonOBJ = JSONObject()
-                val linkUrl = URL(getString(R.string.barcodeTranslator,bc))
-                jsonOBJ = JSONObject(linkUrl.readText())
-                result = barcodeData(jsonOBJ.getString("VENDOR"),jsonOBJ.getString("DATE")
-                    ,jsonOBJ.getString("PART_NO"),jsonOBJ.getString("REEL_NO"),jsonOBJ.getString("LOT"),
-                    jsonOBJ.getString("QUANTITY"),jsonOBJ.getString("UOM"))
+    private fun triggerAlert(title:String,msg:String,hexColorCode:String){
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(title)
+            .setMessage(msg)
+            .setPositiveButton("OK") { dialogInterface, _ ->
+                statusInd.text = msg
+                statusInd.setTextColor(Color.RED)
+                clearEverything()
+                dialogInterface.dismiss()
             }
+            .create()
 
-        }
-        catch (ex:Exception){
-            Toast.makeText(c, ex.message.toString(), Toast.LENGTH_SHORT).show()
-        }
-        finally{
-            progressbar_setting(pb)
-
-        }
-        return result
-
-    }
-
-    private fun triggerAlert(title:String,msg:String){
-        val builder = AlertDialog.Builder(c)
-        builder.setTitle(title)
-        builder.setMessage(msg)
-        builder.setPositiveButton("OK") { dialog, which ->
-            // Do something when OK button is clicked
-            clearEverything()
-        }
-        builder.show()
+        dialog.show()
+        // Set background color AFTER show()
+        dialog.window?.setBackgroundDrawable(hexColorCode.toColorInt().toDrawable())
     }
 
     private fun clearEverything(){

@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".T07TransferMaterial">
@@ -21,148 +22,218 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <FrameLayout
+            <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="10dp">
-
-                <ProgressBar
-                    android:id="@+id/T07TFPB"
-                    style="?android:attr/progressBarStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:visibility="invisible"
-                    tools:visibility="invisible" />
+                android:fillViewport="true">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
                     android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/T07TFTransfer"
-                        android:layout_width="320dp"
-                        android:layout_height="80dp"
-                        android:layout_marginBottom="10dp"
-                        android:gravity="bottom"
-                        android:text="Transfer Material to SMT Production"
-                        android:textAlignment="center"
-                        android:textColor="#000000"
-                        android:textSize="24sp" />
-
-                    <LinearLayout
-                        android:id="@+id/margin"
+                    <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="vertical">
+                        android:layout_height="match_parent"
+                        android:padding="10dp">
 
-                        <TextView
-                            android:id="@+id/T07TFMATTBT"
-                            android:layout_width="match_parent"
-                            android:layout_height="40dp"
-                            android:layout_margin="10dp"
-                            android:text="@string/matterialTextview_description"
-                            android:textColor="#000000"
-                            android:textSize="20sp" />
-
-                        <TextView
-                            android:id="@+id/T07TFLOCTBT"
-                            android:layout_width="match_parent"
-                            android:layout_height="40dp"
-                            android:layout_margin="10dp"
-                            android:text="@string/location_label"
-                            android:textColor="#000000"
-                            android:textSize="20sp" />
-
-                        <TextView
-                            android:id="@+id/T07TFQTYTBT"
-                            android:layout_width="match_parent"
-                            android:layout_height="40dp"
-                            android:layout_margin="10dp"
-                            android:text="@string/ReelQty_label"
-                            android:textColor="#000000"
-                            android:textSize="20sp" />
-
-                        <TextView
-                            android:id="@+id/T07TVMNRQ"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="10dp"
-                            android:text="Requestor/Machine Num : "
-                            android:textColor="#000000"
-                            android:textSize="20sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/T07T"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_horizontal"
-                        android:orientation="vertical">
-
-                        <Switch
-                            android:id="@+id/T07SWSCAN"
-                            android:layout_width="220dp"
-                            android:layout_height="50dp"
-                            android:enabled="true"
-                            android:text="Scan Multiple"
-                            android:textAlignment="center"
-                            android:textColor="#000000"
-                            android:textSize="20sp" />
-
-                        <EditText
-                            android:id="@+id/T07TFTOLOC"
-                            android:layout_width="320dp"
-                            android:layout_height="60dp"
-                            android:layout_margin="10dp"
-                            android:background="@drawable/cell_with_border"
-                            android:ems="10"
-                            android:hint="@string/ToLoc"
-                            android:inputType="text"
-                            android:padding="10dp"
-                            android:textSize="20sp" />
-
-                        <EditText
-                            android:id="@+id/T07TFBCODE"
-                            android:layout_width="320dp"
-                            android:layout_height="60dp"
-                            android:layout_margin="10dp"
-                            android:background="@drawable/cell_with_border"
-                            android:ems="10"
-                            android:hint="@string/BarcodeInputHint"
-                            android:inputType="text"
-                            android:padding="10dp"
-                            android:textSize="20sp" />
-
-                        <TextView
-                            android:id="@+id/T07SCANTOTAL"
-                            android:layout_width="320dp"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="10dp"
-                            android:background="@drawable/cell_with_border"
-                            android:text="Total Scanned : "
-                            android:textColor="#000000"
-                            android:textSize="20sp" />
-
-                        <LinearLayout
-                            android:id="@+id/T07TFSCANLIST"
+                        <ProgressBar
+                            android:id="@+id/T07TFPB"
+                            style="?android:attr/progressBarStyle"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:orientation="vertical"></LinearLayout>
+                            android:visibility="invisible"
+                            tools:visibility="invisible" />
 
-                        <Button
-                            android:id="@+id/BTNT07Transfer"
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="60dp"
-                            android:text="@string/Transfer" />
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="vertical">
 
-                    </LinearLayout>
+                            <TextView
+                                android:id="@+id/T07TFTransfer"
+                                android:layout_width="320dp"
+                                android:layout_height="80dp"
+                                android:layout_marginBottom="10dp"
+                                android:gravity="bottom"
+                                android:text="Transfer Material to SMT Production"
+                                android:textAlignment="center"
+                                android:textColor="#000000"
+                                android:textSize="24sp" />
 
+                            <LinearLayout
+                                android:id="@+id/margin"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/T07TFMATTBT"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="40dp"
+                                    android:layout_margin="10dp"
+                                    android:text="@string/matterialTextview_description"
+                                    android:textColor="#000000"
+                                    android:textSize="20sp" />
+
+                                <TextView
+                                    android:id="@+id/T07TFLOCTBT"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="40dp"
+                                    android:layout_margin="10dp"
+                                    android:text="@string/location_label"
+                                    android:textColor="#000000"
+                                    android:textSize="20sp" />
+
+                                <TextView
+                                    android:id="@+id/T07TFQTYTBT"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="40dp"
+                                    android:layout_margin="10dp"
+                                    android:text="@string/ReelQty_label"
+                                    android:textColor="#000000"
+                                    android:textSize="20sp" />
+
+                                <TextView
+                                    android:id="@+id/T07TVMNRQ"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="10dp"
+                                    android:text="Requestor/Machine Num : "
+                                    android:textColor="#000000"
+                                    android:textSize="20sp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/T07T"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_horizontal"
+                                android:orientation="vertical">
+
+                                <Switch
+                                    android:id="@+id/T07SWSCAN"
+                                    android:layout_width="220dp"
+                                    android:layout_height="50dp"
+                                    android:enabled="true"
+                                    android:text="Scan Multiple"
+                                    android:textAlignment="center"
+                                    android:textColor="#000000"
+                                    android:textSize="20sp" />
+
+                                <EditText
+                                    android:id="@+id/T07TFTOLOC"
+                                    android:layout_width="320dp"
+                                    android:layout_height="60dp"
+                                    android:layout_margin="10dp"
+                                    android:background="@drawable/cell_with_border"
+                                    android:ems="10"
+                                    android:hint="@string/ToLoc"
+                                    android:inputType="text"
+                                    android:padding="10dp"
+                                    android:textSize="20sp" />
+
+                                <EditText
+                                    android:id="@+id/T07TFBCODE"
+                                    android:layout_width="320dp"
+                                    android:layout_height="60dp"
+                                    android:layout_margin="10dp"
+                                    android:background="@drawable/cell_with_border"
+                                    android:ems="10"
+                                    android:hint="@string/BarcodeInputHint"
+                                    android:inputType="text"
+                                    android:padding="10dp"
+                                    android:textSize="20sp" />
+
+                                <TextView
+                                    android:id="@+id/T07SCANTOTAL"
+                                    android:layout_width="320dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="10dp"
+                                    android:background="@drawable/cell_with_border"
+                                    android:text="Total Scanned : "
+                                    android:textColor="#000000"
+                                    android:textSize="20sp" />
+
+                                <Button
+                                    android:id="@+id/BTNT07Transfer"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="60dp"
+                                    android:text="@string/Transfer" />
+
+                                <LinearLayout
+                                    android:id="@+id/T07TFSCANLIST"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:orientation="vertical">
+
+                                    <TableLayout
+                                        android:id="@+id/T07TL"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="match_parent">
+
+                                        <TableRow
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="match_parent"
+                                            android:gravity="center">
+
+                                            <TextView
+                                                android:id="@+id/textView67"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:background="@drawable/cell_with_border"
+                                                android:padding="5dp"
+                                                android:text="Part"
+                                                android:textColor="#000000"
+                                                android:textSize="16sp"
+                                                android:textStyle="bold" />
+
+                                            <TextView
+                                                android:id="@+id/textView66"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:background="@drawable/cell_with_border"
+                                                android:padding="5dp"
+                                                android:text="Batch"
+                                                android:textColor="#000000"
+                                                android:textSize="16sp"
+                                                android:textStyle="bold" />
+
+                                            <TextView
+                                                android:id="@+id/textView65"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:background="@drawable/cell_with_border"
+                                                android:padding="5dp"
+                                                android:text="Reel No"
+                                                android:textColor="#000000"
+                                                android:textSize="16sp"
+                                                android:textStyle="bold" />
+
+                                            <TextView
+                                                android:id="@+id/textView64"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:background="@drawable/cell_with_border"
+                                                android:padding="5dp"
+                                                android:text="Quantity"
+                                                android:textColor="#000000"
+                                                android:textSize="16sp"
+                                                android:textStyle="bold" />
+                                        </TableRow>
+
+                                    </TableLayout>
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </FrameLayout>
                 </LinearLayout>
-
-            </FrameLayout>
+            </HorizontalScrollView>
 
         </LinearLayout>
     </ScrollView>

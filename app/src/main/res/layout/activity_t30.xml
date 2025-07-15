@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".T30">
@@ -21,7 +22,7 @@
             android:id="@+id/parentLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="10dp"
+            android:layout_margin="5dp"
             android:orientation="vertical">
 
             <TextView
@@ -55,7 +56,7 @@
                             android:id="@+id/T30btnMenu"
                             android:layout_width="wrap_content"
                             android:layout_height="60dp"
-                            android:layout_margin="10dp"
+                            android:layout_margin="5dp"
                             android:layout_weight="1"
                             android:text="@string/menu"
                             android:textSize="14sp" />
@@ -64,7 +65,7 @@
                             android:id="@+id/T30btnClear"
                             android:layout_width="wrap_content"
                             android:layout_height="60dp"
-                            android:layout_margin="10dp"
+                            android:layout_margin="5dp"
                             android:layout_weight="1"
                             android:text="@string/Clear" />
 
@@ -72,7 +73,7 @@
                             android:id="@+id/T30btnSave"
                             android:layout_width="wrap_content"
                             android:layout_height="60dp"
-                            android:layout_margin="10dp"
+                            android:layout_margin="5dp"
                             android:layout_weight="1"
                             android:text="@string/save" />
                     </LinearLayout>
@@ -81,6 +82,15 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/T30STATUSIND"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/Empty"
+                            android:textColor="#2DAB28"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/tvT30BarcodeTitle"
@@ -106,12 +116,12 @@
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            android:padding="5dp">
 
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_margin="10dp"
                                 android:orientation="vertical">
 
                                 <TextView
@@ -138,7 +148,7 @@
                             <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_margin="10dp"
+                                android:layout_marginStart="5dp"
                                 android:orientation="vertical">
 
                                 <TextView
@@ -197,7 +207,6 @@
                             <LinearLayout
                                 android:layout_width="130dp"
                                 android:layout_height="wrap_content"
-                                android:layout_margin="10dp"
                                 android:orientation="vertical">
 
                                 <TextView
@@ -217,13 +226,14 @@
                                     android:ems="10"
                                     android:hint="@string/quantityHint"
                                     android:inputType="text"
+                                    android:padding="5dp"
                                     android:singleLine="false" />
                             </LinearLayout>
 
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_margin="10dp"
+                                android:layout_marginStart="5dp"
                                 android:orientation="vertical">
 
                                 <TextView
@@ -242,7 +252,8 @@
                                     android:background="@drawable/cell_with_border"
                                     android:ems="10"
                                     android:hint="@string/BatchHint"
-                                    android:inputType="text" />
+                                    android:inputType="text"
+                                    android:padding="5dp" />
                             </LinearLayout>
                         </LinearLayout>
 
@@ -256,7 +267,6 @@
                             <LinearLayout
                                 android:layout_width="150dp"
                                 android:layout_height="wrap_content"
-                                android:layout_margin="10dp"
                                 android:orientation="vertical">
 
                                 <TextView
@@ -284,7 +294,7 @@
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_margin="10dp"
+                                android:layout_marginStart="5dp"
                                 android:orientation="vertical">
 
                                 <TextView
@@ -303,7 +313,8 @@
                                     android:background="@drawable/cell_with_border"
                                     android:ems="10"
                                     android:hint="@string/ToStorageLocationInputHint"
-                                    android:inputType="text" />
+                                    android:inputType="text"
+                                    android:padding="5dp" />
                             </LinearLayout>
                         </LinearLayout>
 

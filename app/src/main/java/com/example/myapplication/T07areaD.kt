@@ -16,6 +16,9 @@ import android.widget.LinearLayout
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
+import android.widget.Toast
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -37,6 +40,11 @@ class T07areaD : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_t07area_d)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         titleTV = findViewById(R.id.T07areaDTitle)
         currentArea = intent.getStringExtra("Area").toString()
         gBadgeNum = intent.getStringExtra("Badge").toString()
@@ -48,14 +56,29 @@ class T07areaD : AppCompatActivity() {
 
         runBlocking {
             val job = GlobalScope.launch {
-                dataOfJsonString = getPullListData(currentArea)
+                try {
+                    dataOfJsonString = getPullListData(currentArea)
+                }
+                catch (e:Exception){
+                    Toast.makeText(c, e.message.toString(), Toast.LENGTH_SHORT).show()
+                }
             }
             job.join()
-            var sData = commonFunctions().translateJsonStringToList(dataOfJsonString)
-            if(sData.size > 0){
+            try{
+                var sData = commonFunctions().translateJsonStringToList(dataOfJsonString)
+                if(sData.size > 0){
 
-                BuildTable(sData)
+                    try {
+                        BuildTable(sData)
+                    }
+                    catch (e:Exception){
+                        Toast.makeText(c, e.message.toString(), Toast.LENGTH_SHORT).show()
+                    }
 
+                }
+            }
+            catch (e:Exception){
+                Toast.makeText(c, e.message.toString(), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -158,6 +181,7 @@ class T07areaD : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
+        super.onBackPressed()
         val T07Cls = com.example.myapplication.T07()
         T07Cls.updateUsageArea(currentArea,"0","")
         handler.removeCallbacksAndMessages(null) // Prevent leaks

@@ -19,19 +19,27 @@ import android.widget.TextView
 import android.widget.inline.InlineContentView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import com.example.myapplication.T06.BarcodeData
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
+import java.io.OutputStreamWriter
+import java.net.HttpURLConnection
 import java.net.URL
 import java.util.UUID
 
 class T05 : AppCompatActivity() {
 
     private lateinit var inBarcode:EditText
+    private lateinit var btnMenu: Button
+    private lateinit var btnClear:Button
     private lateinit var tvMat:TextView
     private lateinit var tvBat:TextView
     private lateinit var tvReel:TextView
@@ -42,150 +50,162 @@ class T05 : AppCompatActivity() {
     private lateinit var btnTransfer:Button
     private lateinit var gbadgeNum:String
     private lateinit var sw:Switch
+    private lateinit var mainTL: TableLayout
     private var dataList:MutableList<SCANNED_DATA> = mutableListOf()
     private lateinit var matscn:TextView
     private lateinit var prefLoc:TextView
+    private lateinit var cf:commonFunctions
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_t05)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+        cf = commonFunctions()
+        var g_prefLoc = String()
+        mainTL = findViewById<TableLayout>(R.id.T05TL)
+        btnMenu = findViewById<Button>(R.id.T05btnMenu)
+        btnClear = findViewById<Button>(R.id.T05btnClear)
         inBarcode = findViewById(R.id.T05EDBARCODE)
         tvMat = findViewById(R.id.T05TVMATERIAL)
-        tvBat = findViewById(R.id.T05TVBATCH)
-        tvReel = findViewById(R.id.T05TVREELNUM)
-        tvQty = findViewById(R.id.T05EDQUANTITY)
         inLoc = findViewById(R.id.T05EDINLOCATION)
         sw = findViewById(R.id.T05SWSM)
         pb = findViewById(R.id.T05PB)
         matscn = findViewById(R.id.T05TVMatScn)
         prefLoc = findViewById(R.id.T05TVPL)
-        c = this
+        c = this@T05
         btnTransfer = findViewById(R.id.T05BTNTRANSFER)
         gbadgeNum = intent.getStringExtra("Badge").toString()
         inBarcode.requestFocus()
         hideKeyboard()
-        var barcodeResult = SCANNED_DATA(VENDOR = "",
-            DATE = "",
-            MATERIAL = "",
-            REEL_NO = "",
-            LOT = "",
-            QUANTITY = "",)
+        var submitSingle = BarcodeData("","","","","","","")
+        sw.setOnClickListener {
+            if(sw.isChecked){
+                regenerateTableHeader()
+                tvMat.text = "TextView"
+                inLoc.requestFocus()
+                inLoc.text.clear()
+                inBarcode.text.clear()
+                hideKeyboard()
+            }
+            else{
+                inLoc.text.clear()
+                inBarcode.text.clear()
+                regenerateTableHeader()
+                inBarcode.requestFocus()
+                hideKeyboard()
+            }
+        }
+        btnClear.setOnClickListener {
+            matscn.text = "Material Scanned : "
+            regenerateTableHeader()
+            inBarcode.text.clear()
+            inLoc.text.clear()
+            prefLoc.text = ""
+            tvMat.text = "Material : "
 
-        sw.setOnCheckedChangeListener { buttonView, isChecked ->
-            // do something, the isChecked will be
-            // true if the switch is in the On position
-            val mainLayout:LinearLayout = findViewById(R.id.T05LinearHoriz)
-            mainLayout.removeAllViews()
-            dataList.clear()
-            inLoc.requestFocus()
-            hideKeyboard()
         }
 
-        inBarcode.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
+        btnMenu.setOnClickListener {
+            this@T05.finish()
+        }
+
+        inLoc.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN ||
                 keyCode == KeyEvent.KEYCODE_TAB && event.action == KeyEvent.ACTION_DOWN
-            ) {
-                //Perform Code
+            ){
+                inBarcode.requestFocus()
                 hideKeyboard()
-                runBlocking {
-                    val job = GlobalScope.launch {
-                        runOnUiThread {
-                            setProgressBar(pb)
-                        }
-                        barcodeResult = translateBarcode(inBarcode.text.toString());
-                        if(!barcodeResult.MATERIAL.isNullOrBlank()){
-                            if(sw.isChecked){
-                                var UUIDInfo = UUID.randomUUID().toString()
-                                var res:String = ""
-                                runBlocking {
-                                    val job = GlobalScope.launch {
-                                        res = saveToSAP(barcodeResult,gbadgeNum,UUIDInfo);
-
-                                    }
-                                    job.join()
-                                    val showResultDialog = AlertDialog.Builder(c)
-                                    showResultDialog.setTitle(res.split('$')[0].replace("\"",""))
-                                    showResultDialog.setMessage(res.split('$')[1].replace("\"",""))
-                                    showResultDialog.setPositiveButton("ok") { _, _ ->
-                                        inBarcode.text.clear()
-                                        inBarcode.requestFocus()
-                                        runOnUiThread (
-                                            Runnable {
-                                                generateTable(barcodeResult)
-                                            }
-                                        )
-
-                                        dataList.add(barcodeResult)
-                                        matscn.text = "Material Scanned : ${dataList.size}"
-                                        tvMat.text = getString(R.string.matterialTextview_description)
-                                        tvBat.text = getString(R.string.BatchLabel)
-                                        tvReel.text = getString(R.string.ReelNum)
-                                        tvQty.setText(getString(R.string.tvQuantityTxt, ""))
-
-
-                                    }
-                                    runOnUiThread {
-                                        showResultDialog.show()
-                                    }
-                                }
-
-                            }
-                            else{
-                                tvMat.text = getString(R.string.tvMaterialTxt, barcodeResult.MATERIAL)
-                                tvBat.text = getString(R.string.tvBatchTxt, barcodeResult.LOT)
-                                tvReel.text = getString(R.string.tvReelNumTxt, barcodeResult.REEL_NO)
-                                runOnUiThread ( Runnable {
-                                    tvQty.setText(barcodeResult.QUANTITY)
-                                })
-                            }
-
-
-                            runOnUiThread {
-                                inLoc.requestFocus()
-                                inBarcode.text.clear()
-                            }
-
-                        }
-                        else{
-
-                            val wrongBarcodeDialog = AlertDialog.Builder(c)
-                            wrongBarcodeDialog.setTitle("Wrong Barcode")
-                            wrongBarcodeDialog.setMessage("Wrong barcode scanned please scan the 2D barcode")
-                            wrongBarcodeDialog.setPositiveButton("Scan Again") { _, _ ->
-                                inBarcode.text.clear()
-                                inBarcode.requestFocus()
-                            }
-                            runOnUiThread {
-                                wrongBarcodeDialog.show()
-                            }
-                            barcodeResult = SCANNED_DATA(VENDOR = "",
-                                DATE = "",
-                                MATERIAL = "",
-                                REEL_NO = "",
-                                LOT = "",
-                                QUANTITY = "",)
-                        }
-                    }
-                    job.join()
-                    setProgressBar(pb)
-                }
-
-
-
-
                 return@OnKeyListener true
             }
             false
         })
 
-        inLoc.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
+        inBarcode.setOnKeyListener(View.OnKeyListener{_,keyCode,event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN ||
                 keyCode == KeyEvent.KEYCODE_TAB && event.action == KeyEvent.ACTION_DOWN
-            ) {
-                //Perform Code
-                hideKeyboard()
+            ){
                 if(sw.isChecked){
-                    inBarcode.requestFocus()
+                    if(inLoc.text.isNullOrBlank()){
+                        cf.showMessage(c,"Message","Error Please Scan Rack","OK", positiveButtonAction = {
+                            inLoc.requestFocus()
+
+                        }).show()
+                    }
+                    else{
+                        val result = translateBarcode(inBarcode.text.toString())
+                        if(result.lOT.isNullOrBlank() && result.rEEL_NO.isNullOrBlank() && result.pART_NO.isNullOrBlank()
+                            && result.qUANTITY.isNullOrBlank()){
+                            cf.showMessage(c,"Message","Wrong Barcode Scan Again","OK", positiveButtonAction = {
+                                inBarcode.requestFocus()
+                                inBarcode.text.clear()
+                                hideKeyboard()
+                            }).show()
+                        }
+                        else{
+                            CoroutineScope(Dispatchers.IO).launch{
+                                var prefereedLoc = retrievePREFLOC(result.pART_NO)
+                                prefereedLoc = prefereedLoc.replace("\"","")
+                                withContext(Dispatchers.Main){
+                                    prefLoc.text = prefereedLoc
+                                }
+                                if(prefereedLoc == inLoc.text.toString()){
+                                    submitToSAP(result,gbadgeNum,inLoc.text.toString())
+                                    hideKeyboard()
+                                }
+                                else{
+                                    withContext(Dispatchers.Main){
+                                        cf.showDialog(c,"Error","Scan location is ${inLoc.text.toString()}, " +
+                                                "but prefered location is $prefereedLoc","Confirm","Cancel",
+                                            positiveButtonAction = {
+                                                CoroutineScope(Dispatchers.IO).launch{
+                                                    submitToSAP(result,gbadgeNum,inLoc.text.toString())
+                                                }
+                                                hideKeyboard()
+                                            },
+                                            negativeButtonAction = {
+                                                inLoc.text.clear()
+                                                inBarcode.text.clear()
+                                                inLoc.requestFocus()
+                                                hideKeyboard()
+                                            }).show()
+                                    }
+                                }
+
+                            }
+
+                            inBarcode.text.clear()
+                        }
+                    }
+                }
+                else{
+                    val result = translateBarcode(inBarcode.text.toString())
+                    CoroutineScope(Dispatchers.IO).launch{
+                        var prefereedLoc = retrievePREFLOC(result.pART_NO)
+                        prefereedLoc = prefereedLoc.replace("\"","")
+                        withContext(Dispatchers.Main){
+                            g_prefLoc = prefereedLoc
+                            prefLoc.text = prefereedLoc
+                        }
+                    }
+                    if(result.lOT.isNullOrBlank() && result.rEEL_NO.isNullOrBlank() && result.pART_NO.isNullOrBlank()
+                        && result.qUANTITY.isNullOrBlank()){
+                        cf.showMessage(c,"Message","Wrong Barcode Scan Again","OK", positiveButtonAction = {
+                            inBarcode.requestFocus()
+                            inBarcode.text.clear()
+
+                        }).show()
+                    }
+                    else{
+
+                        inLoc.requestFocus()
+                        submitSingle = result
+                        tvMat.text = "Part Number : ${result.pART_NO} \n Batch/Lot : ${result.lOT} \n Reel/Carton Number : ${result.rEEL_NO}"
+                        hideKeyboard()
+                    }
                 }
                 return@OnKeyListener true
             }
@@ -193,120 +213,211 @@ class T05 : AppCompatActivity() {
         })
 
         btnTransfer.setOnClickListener {
-            var UUIDInfo = UUID.randomUUID().toString()
-            var res:String = ""
-            if (!barcodeResult.MATERIAL.isNullOrBlank() || !inLoc.text.isNullOrBlank()){
-                runBlocking {
-                    val job = GlobalScope.launch {
+            if(inLoc.text.isNullOrBlank()){
+                cf.showMessage(c,"Error","Location not scanned yet","OK", positiveButtonAction = {
 
-                        runOnUiThread {
-                            setProgressBar(pb)
+                    inLoc.requestFocus()
+
+                }).show()
+            }
+            else{
+                if(g_prefLoc == inLoc.text.toString()){
+                    if(submitSingle.lOT.isNullOrBlank() && submitSingle.rEEL_NO.isNullOrBlank() && submitSingle.pART_NO.isNullOrBlank()
+                        && submitSingle.qUANTITY.isNullOrBlank()){
+                        cf.showMessage(c,"Message","Wrong Barcode Scan Again","OK", positiveButtonAction = {
+                            inBarcode.requestFocus()
+                            inBarcode.text.clear()
+
+                        }).show()
+                    }
+                    else{
+                        CoroutineScope(Dispatchers.IO).launch{
+                            submitToSAP(submitSingle,gbadgeNum,inLoc.text.toString())
                         }
-                        barcodeResult.QUANTITY = tvQty.text.toString()
-                        res = saveToSAP(barcodeResult,gbadgeNum.toString(),UUIDInfo);
+                    }
 
+                }
+                else{
+                    cf.showDialog(c,"Error","Scan location is ${inLoc.text.toString()}, " +
+                            "but prefered location is $g_prefLoc","Confirm","Cancel",
+                        positiveButtonAction = {
+                            CoroutineScope(Dispatchers.IO).launch{
+                                submitToSAP(submitSingle,gbadgeNum,inLoc.text.toString())
+                            }
+
+                        },
+                        negativeButtonAction = {
+                            inLoc.text.clear()
+                            inBarcode.text.clear()
+                            inLoc.requestFocus()
+                        }).show()
+                }
+            }
+        }
+    }
+    private suspend fun submitToSAP(input: BarcodeData,badgeID:String,inRack: String){
+        withContext(Dispatchers.IO){
+            try{
+                withContext(Dispatchers.Main){
+                    setProgressBar(pb)
+                }
+                val url = URL("http://172.16.206.19/EKANBANAPI/api/T05")
+                var payLoad = "{\n" +
+                        "  \"batch\": \"${input.lOT}\",\n" +
+                        "  \"material\": \"${input.pART_NO}\",\n" +
+                        "  \"storagE_BIN\": \"${inRack}\",\n" +
+                        "  \"quantity\": \"${input.qUANTITY}\",\n" +
+                        "  \"REEL_NO\": \"${input.rEEL_NO}\",\n" +
+                        "  \"DEVICE_ID\": \"${UUID.randomUUID().toString()}\",\n" +
+                        "  \"badgE_ID\": \"${badgeID}\"\n" +
+                        "}"
+                val connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "POST"
+                connection.setRequestProperty("Content-Type", "application/json")
+                connection.doOutput = true
+                val outputStream = OutputStreamWriter(connection.outputStream)
+                outputStream.write(payLoad)
+                outputStream.flush()
+                val responseCode = connection.responseCode
+                if(responseCode == HttpURLConnection.HTTP_OK){
+                    val inputStream = connection.inputStream
+                    val response = inputStream.bufferedReader().use { it.readText() }
+                    var respSplit = response.split(':')
+                    withContext(Dispatchers.Main){
+                        runOnUiThread ( Runnable {
+                            if(sw.isChecked){
+                                if(respSplit[0].contains('E')){
+                                    cf.showMessage(
+                                        c,
+                                        respSplit[0],
+                                        respSplit[1],
+                                        "OK",
+                                        positiveButtonAction = {
+                                            inBarcode.requestFocus()
+                                        }).show()
+                                }
+                                else{
+                                    addRowToTL(c,input.pART_NO,input.lOT,input.rEEL_NO,input.qUANTITY)
+                                    matscn.text = "Total Items Scanned : ${mainTL.childCount-1}"
+                                }
+                            }
+                            else{
+                                cf.showMessage(
+                                    c,
+                                    respSplit[0],
+                                    respSplit[1],
+                                    "OK",
+                                    positiveButtonAction = {
+                                        inBarcode.requestFocus()
+                                        inBarcode.text.clear()
+                                    }).show()
+                            }
+
+                        } )
                     }
-                    job.join()
-                    val showResultDialog = AlertDialog.Builder(c)
-                    showResultDialog.setTitle(res.split('$')[0].replace("\"",""))
-                    showResultDialog.setMessage(res.split('$')[1].replace("\"",""))
-                    showResultDialog.setPositiveButton("ok") { _, _ ->
-                       inBarcode.text.clear()
-                        inBarcode.requestFocus()
-                        inLoc.text.clear()
-                        tvMat.text = getString(R.string.matterialTextview_description)
-                        tvBat.text = getString(R.string.BatchLabel)
-                        tvReel.text = getString(R.string.ReelNum)
-                        tvQty.setText(getString(R.string.tvQuantityTxt, ""))
+                }
+                else{
+                    withContext(Dispatchers.Main){
+                        cf.showMessage(c,"Error","Code : $responseCode","OK",
+                            positiveButtonAction = {
+                                inBarcode.requestFocus()
+                                inBarcode.text.clear()
+                            }).show()
                     }
-                    runOnUiThread {
-                        showResultDialog.show()
-                    }
+                }
+            }
+            catch(ex: Exception){
+                withContext(Dispatchers.Main){
+                    cf.showMessage(c,"Error",ex.message.toString(),"OK",
+                        positiveButtonAction = {
+                            regenerateTableHeader()
+                        }).show()
+                }
+            }
+            finally {
+                withContext(Dispatchers.Main){
                     setProgressBar(pb)
                 }
             }
-
         }
-
+    }
+    private fun addRowToTL(ct: Context,partNo:String,lotNo:String,reelNum:String,p_qty:String){
+        var row = cf.generateRow(ct)
+        with(row){
+            layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
+                TableRow.LayoutParams.MATCH_PARENT)
+            gravity = Gravity.CENTER
+        }
+        var tvLayoutParam = TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
+            TableRow.LayoutParams.WRAP_CONTENT)
+        var partTv = cf.generateTVforRow(partNo,c)
+        partTv.layoutParams = tvLayoutParam
+        var lotTV = cf.generateTVforRow(lotNo,c)
+        lotTV.layoutParams = tvLayoutParam
+        var reelTV = cf.generateTVforRow(reelNum,c)
+        reelTV.layoutParams = tvLayoutParam
+        var quantityTV = cf.generateTVforRow(p_qty,c)
+        quantityTV.layoutParams = tvLayoutParam
+        row.addView(partTv)
+        row.addView(lotTV)
+        row.addView(reelTV)
+        row.addView(quantityTV)
+        mainTL.addView(row)
+    }
+    private suspend fun retrievePREFLOC(materialNum:String):String{
+        return withContext(Dispatchers.IO){
+            val url = URL("http://172.16.206.19/EKANBANAPI/api/SMTEKANBAN?material=$materialNum")
+            url.readText()
+        }
     }
 
-    private fun generateTable(dt:SCANNED_DATA){
+    private fun translateBarcode(bcString:String):BarcodeData{
+        var translatedResult = BarcodeData("","","","","","","")
+        val bcSplit = bcString.split('(',')')
+        when {
+            bcSplit.size >= 15 -> {
+                translatedResult.vENDOR = bcSplit[2]
+                translatedResult.lOT = bcSplit[10]
+                translatedResult.dATE = bcSplit[4]
+                translatedResult.pART_NO = bcSplit[6]
+                translatedResult.rEEL_NO = bcSplit[8]
+                translatedResult.qUANTITY = bcSplit[12]
+                translatedResult.uOM = bcSplit[14]
 
-        val mainLayout: LinearLayout = findViewById(R.id.T05LinearHoriz)
-        var tableParam: TableLayout.LayoutParams = TableLayout.LayoutParams(
-            TableLayout.LayoutParams.MATCH_PARENT,
-            TableLayout.LayoutParams.WRAP_CONTENT)
-        var rowParams: TableRow.LayoutParams = TableRow.LayoutParams(
-            TableRow.LayoutParams.MATCH_PARENT,
-            TableRow.LayoutParams.MATCH_PARENT)
-        with(rowParams){
-            weight = 1F
+            }
+            else -> {
+
+            }
         }
 
-        var dataTable = TableLayout(c)
-        dataTable.layoutParams = tableParam
-
-        val pullListRow = TableRow(c)
-        with(pullListRow){
-            gravity = Gravity.CENTER
-            layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT)
-            setBackgroundResource(R.drawable.cell_with_border)
-        }
-
-        val tvMaterial = TextView(c)
-        with(tvMaterial){
-            text = dt.MATERIAL
-            textSize = 16F
-            setTextColor(Color.BLACK)
-            gravity = Gravity.CENTER
-            layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT)
-            setBackgroundResource(R.drawable.cell_with_border)
-            setPadding(15,5,15,10)
-        }
-        val tvQuantity = TextView(c)
-        with(tvQuantity){
-            text = dt.QUANTITY
-            textSize = 16F
-            setTextColor(Color.BLACK)
-            gravity = Gravity.CENTER
-            layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT)
-            setBackgroundResource(R.drawable.cell_with_border)
-            setPadding(15,5,15,10)
-        }
-        val tvReelNo = TextView(c)
-        with(tvReelNo){
-            text = dt.REEL_NO
-            textSize = 16F
-            setTextColor(Color.BLACK)
-            gravity = Gravity.CENTER
-            layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT)
-            setBackgroundResource(R.drawable.cell_with_border)
-            setPadding(15,5,15,10)
-        }
-        val tvBatchNo = TextView(c)
-        with(tvBatchNo){
-            text = dt.LOT
-            textSize = 16F
-            setTextColor(Color.BLACK)
-            gravity = Gravity.CENTER
-            layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT)
-            setBackgroundResource(R.drawable.cell_with_border)
-            setPadding(15,5,15,10)
-        }
-
-        pullListRow.addView(tvMaterial)
-        pullListRow.addView(tvBatchNo)
-        pullListRow.addView(tvReelNo)
-        pullListRow.addView(tvQuantity)
-
-        dataTable.addView(pullListRow)
-
-        mainLayout.addView(dataTable)
+        return translatedResult
     }
 
-    fun Fragment.hideKeyboard() {
-        view?.let { activity?.hideKeyboard(it) }
+    private fun regenerateTableHeader(){
+        mainTL.removeAllViews()
+        var row = cf.generateRow(c)
+        with(row){
+            layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
+                TableRow.LayoutParams.MATCH_PARENT)
+            gravity = Gravity.CENTER
+        }
+        var tvLayoutParam = TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
+            TableRow.LayoutParams.WRAP_CONTENT)
+        var partTv = cf.generateTVforRow("Part Number",c)
+        partTv.layoutParams = tvLayoutParam
+        var lotTV = cf.generateTVforRow("Lot Number",c)
+        lotTV.layoutParams = tvLayoutParam
+        var reelTV = cf.generateTVforRow("Reel Number",c)
+        reelTV.layoutParams = tvLayoutParam
+        var quantityTV = cf.generateTVforRow("Quantity",c)
+        quantityTV.layoutParams = tvLayoutParam
+        row.addView(partTv)
+        row.addView(lotTV)
+        row.addView(reelTV)
+        row.addView(quantityTV)
+        mainTL.addView(row)
     }
+
 
     fun Activity.hideKeyboard() {
         hideKeyboard(currentFocus ?: View(this))
@@ -327,53 +438,6 @@ class T05 : AppCompatActivity() {
             }
 
         })
-    }
-    private suspend fun saveToSAP(barcodeData:SCANNED_DATA,bNum:String,deviceNo:String):String{
-        var result:String = String()
-        withContext(Dispatchers.IO){
-            var linkString = "http://172.16.206.19/REST_API/SMT_EKANBAN_SERVICES/MPPT05PutMaterialInLocation?" +
-                    "location=${inLoc.text}&mat=${barcodeData.MATERIAL}&batch=${barcodeData.LOT}&" +
-                    "reelNum=${barcodeData.REEL_NO}&quantity=${barcodeData.QUANTITY}&badgeNumber=${bNum}&" +
-                    "deviceNo=${deviceNo}"
-            var urlLink = URL(linkString)
-            result = urlLink.readText()
-        }
-            return result
-    }
-
-    private fun translateBarcode(barcodeString:String):SCANNED_DATA{
-        var linkString = "http://172.16.206.19/REST_API/SMT_EKANBAN_SERVICES/BreakBarcodeToArray?barcode=${barcodeString}"
-        var linkURL = URL(linkString)
-        var result = linkURL.readText()
-        var jsonObj = JSONObject(result)
-        var resultFinal = SCANNED_DATA(VENDOR = jsonObj.getString("VENDOR"),
-            DATE = jsonObj.getString("DATE"),
-            MATERIAL = jsonObj.getString("PART_NO"),
-            REEL_NO = jsonObj.getString("REEL_NO"),
-            LOT = jsonObj.getString("LOT"),
-            QUANTITY = jsonObj.getString("QUANTITY")
-        )
-        try{
-
-        }
-        catch (e:Exception){
-
-        }
-        finally {
-            var pLoc = getPrefLoc(resultFinal.MATERIAL)
-            prefLoc.setText("Prefered Location : ${pLoc[1].replace("\"","")}")
-        }
-
-        return resultFinal
-    }
-
-    private fun getPrefLoc(mat:String):List<String> {
-        var PrefLocLink = URL("http://172.16.206.19/REST_API/Third/GETPREFLOC?material=${mat}&storLoc=2006")
-        var result = PrefLocLink.readText()
-        var resultSplit = result.split(':')
-
-        return resultSplit;
-
     }
 
     data class SCANNED_DATA(

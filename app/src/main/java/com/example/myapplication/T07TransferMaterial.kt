@@ -4,7 +4,11 @@ import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
+import org.w3c.dom.Document
+import java.io.StringReader
+import javax.xml.xpath.XPathConstants
+import javax.xml.xpath.XPathFactory
+import org.xml.sax.InputSource
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -24,16 +28,25 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.SwitchCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.DataOutputStream
+import java.io.IOException
+import java.io.InputStreamReader
+import java.io.OutputStream
+import java.net.HttpURLConnection
 import java.net.URL
+import javax.xml.parsers.DocumentBuilderFactory
 
 
 class T07TransferMaterial : AppCompatActivity() {
@@ -59,11 +72,19 @@ class T07TransferMaterial : AppCompatActivity() {
     private lateinit var machineNo:String
     private lateinit var rqmnTV:TextView
     private lateinit var deviceID:String
+    private lateinit var cf:commonFunctions
+    private lateinit var mainTL:TableLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_t07_transfer_material)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         pb = findViewById(R.id.T07TFPB)
+        cf = commonFunctions()
         tvT07Quantity = findViewById(R.id.T07TFQTYTBT)
         tvT07Location = findViewById(R.id.T07TFLOCTBT)
         tvT07Material = findViewById(R.id.T07TFMATTBT)
@@ -73,6 +94,7 @@ class T07TransferMaterial : AppCompatActivity() {
         btnTransfer = findViewById(R.id.BTNT07Transfer)
         totalScannedTV = findViewById(R.id.T07SCANTOTAL)
         rqmnTV = findViewById(R.id.T07TVMNRQ)
+        mainTL = findViewById<TableLayout>(R.id.T07TL)
         gbadgeNum = intent.getStringExtra("Badge").toString()
         gArea = intent.getStringExtra("Area").toString()
         gQty = intent.getStringExtra("Quantity").toString()
@@ -90,6 +112,10 @@ class T07TransferMaterial : AppCompatActivity() {
         inLocation.requestFocus()
 
         hideKeyboard()
+        inLocation.setOnClickListener {
+            hideKeyboard()
+        }
+        inBarcode.setOnClickListener { hideKeyboard() }
 
         inLocation.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP
@@ -101,39 +127,41 @@ class T07TransferMaterial : AppCompatActivity() {
                     builder.setPositiveButton("OK") { dialog, which ->
                         // Do something when OK button is clicked
                         inBarcode.requestFocus()
+                        hideKeyboard()
                     }
                     builder.setNegativeButton("Cancel"){ dialog, which ->
                         // Do something when OK button is clicked
                         inLocation.setText("")
                         inLocation.requestFocus()
+                        hideKeyboard()
                     }
                     builder.show()
                 }
                 else{
                     if(gLocation == inLocation.text.toString()){
-                        setProgressBar(pb)
-                        runBlocking {
-                            val job = GlobalScope.launch {
-                                rackList = getLocationInfo(inLocation.text.toString(),gMaterial)
-                            }
-                            job.join()
+                        CoroutineScope(Dispatchers.Main).launch {
+                            setProgressBar(pb)
+                            rackList = getLocationInfo(inLocation.text.toString(),gMaterial)
                             inBarcode.requestFocus()
-                            if(rackList.size<0){
+                            if(rackList.size < 0){
                                 val builder = AlertDialog.Builder(c)
                                 builder.setTitle(R.string.Warning)
                                 builder.setMessage("JANGAN MANUAL KEY IN. TOLONG SCAN DULU LOCATION ")
                                 builder.setPositiveButton("OK") { dialog, which ->
                                     // Do something when OK button is clicked
                                     inBarcode.requestFocus()
+                                    hideKeyboard()
                                 }
                                 builder.setNegativeButton("Cancel"){ dialog, which ->
                                     // Do something when OK button is clicked
                                     inLocation.setText("")
                                     inLocation.requestFocus()
+                                    hideKeyboard()
                                 }
                                 builder.show()
                             }
                             setProgressBar(pb)
+
                         }
                     }
                     else{
@@ -145,16 +173,18 @@ class T07TransferMaterial : AppCompatActivity() {
                             // Do something when OK button is clicked
                             inLocation.setText("")
                             inLocation.requestFocus()
+                            hideKeyboard()
                         }
                         builder.setNegativeButton("Cancel"){ dialog, which ->
                             // Do something when OK button is clicked
                             inLocation.setText("")
                             inLocation.requestFocus()
+                            hideKeyboard()
                         }
                         builder.show()
                     }
                 }
-                hideKeyboard()
+
                 return@OnKeyListener true
             }
             false
@@ -162,116 +192,82 @@ class T07TransferMaterial : AppCompatActivity() {
         T07Switch.setOnCheckedChangeListener { buttonView, isChecked ->
             // do something, the isChecked will be
             // true if the switch is in the On position
-            val mainLayout:LinearLayout = findViewById(R.id.T07TFSCANLIST)
-            mainLayout.removeAllViews()
-            dataList.clear()
+            regenerateHeader()
             btnTransfer.isEnabled = T07Switch.isChecked != true
+            hideKeyboard()
         }
 
         inBarcode.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP
                 || keyCode == KeyEvent.KEYCODE_TAB && event.action == KeyEvent.ACTION_DOWN){
                 if(inBarcode.text.isNullOrBlank()){
-
+                    cf.showMessage(c,"Error","Error Please Scan Barcode","OK",
+                        positiveButtonAction = {
+                        inBarcode.requestFocus()
+                    }).show()
                 }
                 else{
-                    if(T07Switch.isChecked){
-                        setProgressBar(pb)
-                        var barcodeTranslated=barcodeData("","","","","","","")
-                        runBlocking {
-                            val job = GlobalScope.launch {
-                                barcodeTranslated = translateBarcode(inBarcode.text.toString())
-                                inBarcode.text.clear()
-                            }
-                            job.join()
-                            if(barcodeTranslated.PART_NO == gMaterial){
-                                if(checkDuplicates(barcodeTranslated.PART_NO,barcodeTranslated.REEL_NO)){
-                                    val builder = AlertDialog.Builder(c)
-                                    builder.setTitle(R.string.Warning)
-                                    builder.setMessage("Duplicate Carton")
-                                    builder.setPositiveButton("OK") { dialog, which ->
-                                        // Do something when OK button is clicked
-                                        inBarcode.requestFocus()
-                                    }
-                                    builder.setNegativeButton("Cancel"){ dialog, which ->
-                                        // Do something when OK button is clicked
-                                        inLocation.setText("")
-                                        inLocation.requestFocus()
-                                    }
-                                    builder.show()
-                                }
-                                else{
-                                    var sAPResult = SendToSAP(barcodeTranslated.PART_NO,inLocation.text.toString(),barcodeTranslated.LOT,
-                                        gbadgeNum,barcodeTranslated.QUANTITY,barcodeTranslated.REEL_NO)
-                                    var sAPresultsplit = sAPResult.split('$')
-                                    if(sAPresultsplit[0].contains('F')){
-                                        runOnUiThread {
-                                            val builder = AlertDialog.Builder(c)
-                                            builder.setTitle(sAPresultsplit[0] + "Error")
-                                            builder.setMessage(sAPresultsplit[1])
-                                            builder.setPositiveButton("OK") { dialog, which ->
-                                                // Do something when OK button is clicked
-                                                inBarcode.requestFocus()
-                                            }
-                                            builder.show()
-                                        }
-                                    }
-                                    else{
-                                        dataList.add(barcodeTranslated)
-                                        generateTable(barcodeTranslated)
-                                        totalScannedTV.text =
-                                            getString(R.string.total_scanned_material, dataList.size.toString())
-                                    }
-                                }
-                            }
-                            else{
-                                val builder = AlertDialog.Builder(c)
-                                builder.setTitle(R.string.Warning)
-                                builder.setMessage("Material or barcode is wrong")
-                                builder.setPositiveButton("OK") { dialog, which ->
-                                    // Do something when OK button is clicked
-                                    inBarcode.requestFocus()
-                                }
-                                builder.setNegativeButton("Cancel"){ dialog, which ->
-                                    // Do something when OK button is clicked
-                                    inLocation.setText("")
-                                    inLocation.requestFocus()
-                                }
-                                builder.show()
-
-                            }
-                        }
+                    barcodeTranslated = translateBarcode(inBarcode.text.toString())
+                    if(barcodeTranslated.PART_NO.isNullOrBlank() || barcodeTranslated.LOT.isNullOrBlank() ||
+                        barcodeTranslated.REEL_NO.isNullOrBlank()){
+                        cf.showMessage(c,"Error","You scanned the wrong Barcode","OK",
+                            positiveButtonAction = {
+                                inBarcode.requestFocus()
+                            }).show()
                     }
                     else{
-                        setProgressBar(pb)
-                        runBlocking {
-                            val job = GlobalScope.launch {
-                                barcodeTranslated = translateBarcode(inBarcode.text.toString())
-                                inBarcode.text.clear()
-                            }
-                            job.join()
-
-                            if(barcodeTranslated.PART_NO == gMaterial){
-                                generateTextView(barcodeTranslated.PART_NO,barcodeTranslated.LOT,barcodeTranslated.REEL_NO,barcodeTranslated.QUANTITY)
+                        inBarcode.text.clear()
+                        if(gMaterial == barcodeTranslated.PART_NO){
+                            if(gLocation == inLocation.text.toString()){
+                                if(T07Switch.isChecked){
+                                    //SCAN MULTIPLE
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        setProgressBar(pb)
+                                        var sapResult = SendToSAP(barcodeTranslated.PART_NO,inLocation.text.toString(),barcodeTranslated.LOT,
+                                            gbadgeNum,barcodeTranslated.QUANTITY,barcodeTranslated.REEL_NO)
+                                        var sapResultSplit = sapResult.split('$')
+                                        if(sapResultSplit[0].contains('F') ||
+                                            sapResultSplit[0].contains('E')){
+                                            cf.showMessage(c,sapResultSplit[0],sapResultSplit[1],"OK",
+                                                positiveButtonAction = {
+                                                    inBarcode.requestFocus()
+                                                }).show()
+                                        }
+                                        else{
+                                            addRowToTL(c,barcodeTranslated.PART_NO,barcodeTranslated.LOT,
+                                                barcodeTranslated.REEL_NO,barcodeTranslated.QUANTITY)
+                                            var rowCnt = mainTL.childCount - 1
+                                            totalScannedTV.text = getString(R.string.total_scanned_material,
+                                                rowCnt.toString())
+                                        }
+                                        setProgressBar(pb)
+                                    }
+                                }
+                                else{
+                                    //SCAN SINGLE
+                                    if(!btnTransfer.isEnabled){
+                                        btnTransfer.isEnabled = true
+                                    }
+                                }
                             }
                             else{
-                                val builder = AlertDialog.Builder(c)
-                                builder.setTitle(R.string.Warning)
-                                builder.setMessage("Material or barcode is wrong")
-                                builder.setPositiveButton("OK") { dialog, which ->
-                                    // Do something when OK button is clicked
-                                    inBarcode.requestFocus()
-                                }
-                                builder.setNegativeButton("Cancel"){ dialog, which ->
-                                    // Do something when OK button is clicked
-                                    inLocation.setText("")
-                                    inLocation.requestFocus()
-                                }
-                                builder.show()
+                                cf.showMessage(c,"Error","You scanned the wrong Location","OK",
+                                    positiveButtonAction = {
+                                        inLocation.text.clear()
+                                        inLocation.requestFocus()
+                                    }).show()
                             }
-
                         }
+                        else{
+                            cf.showMessage(c,"Error","You scanned the wrong Material","OK",
+                                positiveButtonAction = {
+                                    inBarcode.text.clear()
+                                    inBarcode.requestFocus()
+                                }).show()
+                        }
+
                     }
+
                 }
                 hideKeyboard()
                 return@OnKeyListener true
@@ -280,82 +276,119 @@ class T07TransferMaterial : AppCompatActivity() {
         })
 
         btnTransfer.setOnClickListener {
-            if(runBlocking { checkDuplicates(barcodeTranslated.PART_NO,barcodeTranslated.REEL_NO) }){
-                val builder = AlertDialog.Builder(c)
-                builder.setTitle(R.string.Warning)
-                builder.setMessage("Duplicate Carton")
-                builder.setPositiveButton("OK") { dialog, which ->
-                    // Do something when OK button is clicked
-                    inBarcode.requestFocus()
+            CoroutineScope(Dispatchers.Main ).launch {
+                setProgressBar(pb)
+                val result = SendToSAP(barcodeTranslated.PART_NO,inLocation.text.toString(),
+                    barcodeTranslated.LOT,gbadgeNum,barcodeTranslated.QUANTITY
+                ,barcodeTranslated.REEL_NO)
+                setProgressBar(pb)
+                val resultSplit = result.split('$')
+                cf.showDialog(c,resultSplit[0],resultSplit[1],"OK","Cancel",
+                    positiveButtonAction = {
+                        this@T07TransferMaterial.finish()
+                    }, negativeButtonAction = { clearEverything() }).show()
+
+            }
+        }
+    }
+
+    private fun clearEverything(){
+        tvT07Material.text = "Material :"
+        tvT07Quantity.text = "Reel Qty :"
+        rqmnTV.text = "Requestor/Machine Num : "
+        inBarcode.text.clear()
+        inLocation.text.clear()
+    }
+
+    private fun addRowToTL(ct: Context,partNo:String,lotNo:String,reelNum:String,p_qty:String){
+        var row = cf.generateRow(ct)
+        with(row){
+            layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
+                TableRow.LayoutParams.MATCH_PARENT)
+            gravity = Gravity.CENTER
+        }
+        var tvLayoutParam = TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
+            TableRow.LayoutParams.WRAP_CONTENT)
+        var partTv = cf.generateTVforRow(partNo,c)
+        partTv.layoutParams = tvLayoutParam
+        var lotTV = cf.generateTVforRow(lotNo,c)
+        lotTV.layoutParams = tvLayoutParam
+        var reelTV = cf.generateTVforRow(reelNum,c)
+        reelTV.layoutParams = tvLayoutParam
+        var quantityTV = cf.generateTVforRow(p_qty,c)
+        quantityTV.layoutParams = tvLayoutParam
+        row.addView(partTv)
+        row.addView(lotTV)
+        row.addView(reelTV)
+        row.addView(quantityTV)
+        mainTL.addView(row)
+    }
+
+    private fun regenerateHeader(){
+        mainTL.removeAllViews()
+        var hRow = cf.generateRow(c)
+        var hPart = cf.generateTVforRow("Part",c)
+        var hBatch = cf.generateTVforRow("Batch",c)
+        var hReelNo = cf.generateTVforRow("Reel No",c)
+        var hQty = cf.generateTVforRow("Quantity",c)
+        hRow.addView(hPart)
+        hRow.addView(hBatch)
+        hRow.addView(hReelNo)
+        hRow.addView(hQty)
+        mainTL.addView(hRow)
+    }
+
+    private suspend fun SendToSAP(mat:String,rack:String,lotNum:String,badgeNum:String,quantity:String,cartonNo:String):String{
+
+        var jsonString = String()
+        withContext(Dispatchers.IO){
+            deviceID = getDeviceUniqueId(c)
+            val itemID = intent.getIntExtra("ID", 0)
+            val modelName = deviceID
+            deviceID = getDeviceUniqueId(c)
+            val RESTUrl = URL("http://172.16.206.19/EKANBANAPI/api/SMTEKANBAN")
+            var payLoad = "{\n" +
+                    "  \"material\": \"${mat}\",\n" +
+                    "  \"location\": \"${rack}\",\n" +
+                    "  \"batch\": \"${lotNum}\",\n" +
+                    "  \"badgenum\": \"${badgeNum}\",\n" +
+                    "  \"quantity\": ${quantity},\n" +
+                    "  \"deviceid\": \"${modelName}\",\n" +
+                    "  \"cartonnum\": \"${cartonNo}\",\n" +
+                    "  \"itemid\": ${itemID}\n" +
+                    "}"
+            val connection = RESTUrl.openConnection() as HttpURLConnection
+            // Set request method to POST
+            connection.requestMethod = "POST"
+            // Enable output for sending data
+            connection.doOutput = true
+            // Set request headers
+            connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8")
+            connection.setRequestProperty("Accept", "application/json")
+            // Write JSON data to the connection output stream
+            val wr = DataOutputStream(connection.outputStream)
+            wr.write(payLoad.toByteArray(Charsets.UTF_8))
+            wr.flush()
+            wr.close()
+            // Get response
+            val responseCode = connection.responseCode
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // Read response
+                val inputStream = BufferedReader(InputStreamReader(connection.inputStream))
+                var inputLine: String?
+                val response = StringBuffer()
+                while (inputStream.readLine().also { inputLine = it } != null) {
+                    response.append(inputLine)
                 }
-                builder.setNegativeButton("Cancel"){ dialog, which ->
-                    // Do something when OK button is clicked
-                    inLocation.setText("")
-                    inLocation.requestFocus()
-                }
-                builder.show()
+                inputStream.close()
+                jsonString = response.toString()
             }
             else{
-                var sAPResult = String()
-                runBlocking {
-                    sAPResult = SendToSAP(barcodeTranslated.PART_NO,inLocation.text.toString(),barcodeTranslated.LOT,
-                        gbadgeNum,barcodeTranslated.QUANTITY,barcodeTranslated.REEL_NO)
-                }
-                var sAPresultsplit = sAPResult.split('$')
-                if(sAPresultsplit[0].contains('E')){
-                    runOnUiThread {
-                        val builder = AlertDialog.Builder(c)
-                        builder.setTitle(sAPresultsplit[0] + "Error")
-                        builder.setMessage(sAPresultsplit[1])
-                        builder.setPositiveButton("OK") { dialog, which ->
-                            // Do something when OK button is clicked
-                            inBarcode.requestFocus()
-                        }
-                        builder.show()
-                    }
-                }
-                else{
-                    runOnUiThread {
-                        val builder = AlertDialog.Builder(c)
-                        builder.setTitle(sAPresultsplit[0])
-                        builder.setMessage(sAPresultsplit[1])
-                        builder.setPositiveButton("OK") { dialog, which ->
-                            // Do something when OK button is clicked
-                            finish()
-                        }
-                        builder.show()
-                    }
-                }
+                jsonString = "F\$INTERNAL SERVER ERROR CODE : $responseCode"
             }
-        }
-    }
-    private suspend fun SendToSAP(mat:String,rack:String,lotNum:String,badgeNum:String,quantity:String,cartonNo:String):String{
-        setProgressBar(pb)
-        var jsonString = String()
-        withContext(Dispatchers.Default){
-            deviceID = getDeviceUniqueId(c)
-            runBlocking {
-                val job = GlobalScope.launch {
-                    var Usagedata = retrieveUsageList(gArea)
-                    if(Usagedata.USAGE == "0" || Usagedata.BADGE == deviceID){
-                        val itemID= intent.getSerializableExtra("ID").toString()
-                        val modelName = deviceID
-                        var linkString = "http://172.16.206.19/REST_API/SMT_EKANBAN_SERVICES/MPPSMTEKANBANTransferMaterial?material=${mat}&location=${rack}&batch=${lotNum}&badgeNum=${badgeNum}&quantity=${quantity}&ItemID=${itemID}&deviceID=${modelName}&cartonNum=${cartonNo}"
-                        val linkUrl = URL(linkString)
-                        jsonString = linkUrl.readText()
-                    }
-                    else{
-                        jsonString = "F\$Area is being used !"
-                    }
-                }
-                job.join()
-                setProgressBar(pb)
-            }
+            connection.disconnect()
         }
         return jsonString
-    }
-    fun Fragment.hideKeyboard() {
-        view?.let { activity?.hideKeyboard(it) }
     }
 
     fun Activity.hideKeyboard() {
@@ -366,171 +399,26 @@ class T07TransferMaterial : AppCompatActivity() {
         val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
-    private suspend fun checkDuplicates(matrn:String,ctnNo:String):Boolean{
-        var res = 0
-        var resF:Boolean = false
-        withContext(Dispatchers.Default){
-            runBlocking {
-                val job = GlobalScope.launch {
-                    var result = URL("http://172.16.206.19/REST_API/SMT_EKANBAN_SERVICES/CheckForDuplicated?cartonNo=${ctnNo}&material=${matrn}").readText()
-                    res = result.replace("\"","").toInt()
-                }
-                job.join()
-                if(dataList.size > 0){
-                    val itm = dataList.filter{it.PART_NO == matrn && it.REEL_NO == ctnNo}
-                    if(itm.isNotEmpty()){
-                        res++
-                    }
-                }
-                if(res > 0){
-                    resF = true
-                }
-            }
-        }
-        return resF
-    }
 
-    private fun generateTable(dt:barcodeData){
-        val mainLayout:LinearLayout = findViewById(R.id.T07TFSCANLIST)
-        var tableParam: TableLayout.LayoutParams = TableLayout.LayoutParams(
-            TableLayout.LayoutParams.MATCH_PARENT,
-            TableLayout.LayoutParams.WRAP_CONTENT)
-        var rowParams: TableRow.LayoutParams = TableRow.LayoutParams(
-            TableRow.LayoutParams.MATCH_PARENT,
-            TableRow.LayoutParams.MATCH_PARENT)
-        with(rowParams){
-            weight = 1F
-        }
-
-        var dataTable = TableLayout(c)
-        dataTable.layoutParams = tableParam
-
-        val pullListRow = TableRow(c)
-        with(pullListRow){
-            gravity = Gravity.CENTER
-            layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT)
-            setBackgroundResource(R.drawable.cell_with_border)
-        }
-
-        val tvMaterial = TextView(c)
-        with(tvMaterial){
-            text = dt.PART_NO
-            textSize = 16F
-            setTextColor(Color.BLACK)
-            gravity = Gravity.CENTER
-            layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT)
-            setBackgroundResource(R.drawable.cell_with_border)
-            setPadding(15,5,15,10)
-        }
-        val tvQuantity = TextView(c)
-        with(tvQuantity){
-            text = dt.QUANTITY
-            textSize = 16F
-            setTextColor(Color.BLACK)
-            gravity = Gravity.CENTER
-            layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT)
-            setBackgroundResource(R.drawable.cell_with_border)
-            setPadding(15,5,15,10)
-        }
-        val tvReelNo = TextView(c)
-        with(tvReelNo){
-            text = dt.REEL_NO
-            textSize = 16F
-            setTextColor(Color.BLACK)
-            gravity = Gravity.CENTER
-            layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT)
-            setBackgroundResource(R.drawable.cell_with_border)
-            setPadding(15,5,15,10)
-        }
-        val tvBatchNo = TextView(c)
-        with(tvBatchNo){
-            text = dt.LOT
-            textSize = 16F
-            setTextColor(Color.BLACK)
-            gravity = Gravity.CENTER
-            layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT)
-            setBackgroundResource(R.drawable.cell_with_border)
-            setPadding(15,5,15,10)
-        }
-
-        pullListRow.addView(tvMaterial)
-        pullListRow.addView(tvBatchNo)
-        pullListRow.addView(tvReelNo)
-        pullListRow.addView(tvQuantity)
-
-        dataTable.addView(pullListRow)
-
-            mainLayout.addView(dataTable)
-    }
-
-    private fun generateTextView(Mat:String,Bat:String,ReelNo:String,qtyReel:String){
-        val mainLayout:LinearLayout = findViewById(R.id.T07TFSCANLIST)
-        mainLayout.removeAllViews()
-        val matTV:TextView = TextView(c)
-        with(matTV){
-            text = "Material : $Mat"
-            textSize = 20F
-            setTextColor(Color.BLACK)
-            gravity= Gravity.CENTER
-            setPadding(15,15,15,15)
-            layoutParams = TableRow.LayoutParams( TableRow.LayoutParams.MATCH_PARENT,TableRow.LayoutParams.WRAP_CONTENT)
-            setBackgroundResource(R.drawable.cell_with_border)
-        }
-        val batTV:TextView = TextView(c)
-        with(batTV){
-            text = "Batch : $Bat"
-            textSize = 20F
-            setTextColor(Color.BLACK)
-            gravity= Gravity.CENTER
-            setPadding(15,15,15,15)
-            layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,TableRow.LayoutParams.WRAP_CONTENT)
-            setBackgroundResource(R.drawable.cell_with_border)
-        }
-        val rnTV:TextView = TextView(c)
-        with(rnTV){
-            text = "Reel Num : $ReelNo"
-            textSize = 20F
-            setTextColor(Color.BLACK)
-            gravity= Gravity.CENTER
-            setPadding(15,15,15,15)
-            layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,TableRow.LayoutParams.WRAP_CONTENT)
-            setBackgroundResource(R.drawable.cell_with_border)
-        }
-        val qtyTV:TextView = TextView(c)
-        with(qtyTV){
-            text = "Reel Quantity : $qtyReel"
-            textSize = 20F
-            setTextColor(Color.BLACK)
-            gravity= Gravity.CENTER
-            setPadding(15,15,15,15)
-            layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT)
-            setBackgroundResource(R.drawable.cell_with_border)
-        }
-
-        mainLayout.addView(matTV)
-        mainLayout.addView(batTV)
-        mainLayout.addView(qtyTV)
-        mainLayout.addView(rnTV)
-    }
-
-    suspend fun translateBarcode(bc:String):barcodeData {
+    private fun translateBarcode(bc:String):barcodeData {
         var tempItem = barcodeData("","","","","","","")
-        withContext(Dispatchers.Default){
-            try{
-                val linkUrl = URL(getString(R.string.barcodeTranslator,bc))
-                val jsonOBJ = JSONObject(linkUrl.readText())
+        val bcSplit = bc.split('(',')')
+        when {
+            bcSplit.size >= 15 -> {
+                tempItem.VENDOR = bcSplit[2]
+                tempItem.LOT = bcSplit[10]
+                tempItem.DATE = bcSplit[4]
+                tempItem.PART_NO = bcSplit[6]
+                tempItem.REEL_NO = bcSplit[8]
+                tempItem.QUANTITY = bcSplit[12]
+                tempItem.UOM = bcSplit[14]
 
-                tempItem = barcodeData(jsonOBJ.getString("VENDOR"),jsonOBJ.getString("DATE")
-                    ,jsonOBJ.getString("PART_NO"),jsonOBJ.getString("REEL_NO"),jsonOBJ.getString("LOT"),
-                    jsonOBJ.getString("QUANTITY"),jsonOBJ.getString("UOM"))
             }
-            catch (ex:Exception){
-                Toast.makeText(c, ex.message.toString(), Toast.LENGTH_SHORT).show()
-            }
-            finally {
-                setProgressBar(pb)
+            else -> {
+
             }
         }
+
         return tempItem
     }
 
@@ -557,20 +445,25 @@ class T07TransferMaterial : AppCompatActivity() {
 
     private suspend fun getLocationInfo(rackLoc:String,material:String):MutableList<Item> {
         var listofitems:MutableList<Item> = mutableListOf<Item>()
-        withContext(Dispatchers.Default){
-            val linkUrl = URL(getString(R.string.locationRackInfo,rackLoc,material))
-            val jsonString = linkUrl.readText()
-            val gson = Gson()
-            val response = gson.fromJson(jsonString, Response::class.java)
+
+        withContext(Dispatchers.IO){
+            try {
+                val linkUrl = URL(getString(R.string.locationRackInfo,rackLoc,material))
+                val jsonString = linkUrl.readText()
+                val gson = Gson()
+                val response = gson.fromJson(jsonString, Response::class.java)
 
 
-            response.listInRack.forEach {
-                var tempItem = Item(it.MATERIAL,it.BATCH,it.QUANTITY)
-                listofitems.add(tempItem)
+                response.listInRack.forEach {
+                    var tempItem = Item(it.MATERIAL,it.BATCH,it.QUANTITY)
+                    listofitems.add(tempItem)
 
+                }
+            }
+            catch (ex:Exception){
+                Toast.makeText(c, ex.message.toString(), Toast.LENGTH_SHORT).show()
             }
         }
-
 
         return listofitems
 

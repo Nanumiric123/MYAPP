@@ -10,6 +10,8 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -32,6 +34,11 @@ class C02 : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_c02)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         btnMenu = findViewById(R.id.C02btnMenu)
         btnClear = findViewById(R.id.C02btnClear)
         btnSave = findViewById(R.id.C02btnSave)
@@ -83,7 +90,7 @@ class C02 : AppCompatActivity() {
 
     }
 
-    private suspend fun submitInventory(invNum: String):String{
+    private suspend fun submitInventory(invNum: String):String {
         var result = String()
         var linkString = "http://172.16.206.19/REST_API/Third/MPPSendToDB?invDoc=${invNum}"
         withContext(Dispatchers.IO){

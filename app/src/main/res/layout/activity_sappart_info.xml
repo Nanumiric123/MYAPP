@@ -2,133 +2,138 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
     tools:context=".SAPPartInfo">
 
-    <HorizontalScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/Q01TVTITLE"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:text="@string/Empty"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textSize="24sp" />
 
-            <TextView
-                android:id="@+id/Q01TVTITLE"
-                android:layout_width="match_parent"
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/Empty"
-                android:textAlignment="center"
-                android:textColor="#000000"
-                android:textSize="24sp" />
+                android:gravity="center"
+                android:orientation="vertical">
 
-            <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:fillViewport="true">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:gravity="center"
-                    android:orientation="vertical">
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fillViewport="true">
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
+                        android:layout_gravity="center_horizontal"
                         android:orientation="vertical">
 
-                        <Button
-                            android:id="@+id/Q01btnClear"
+                        <LinearLayout
+                            android:id="@+id/MainLinearHoriz"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_margin="5dp"
-                            android:layout_weight="1"
-                            android:paddingLeft="50dp"
-                            android:paddingTop="20dp"
-                            android:paddingRight="50dp"
-                            android:paddingBottom="20dp"
-                            android:text="@string/Clear" />
+                            android:layout_marginBottom="20dp"
+                            android:gravity="center"
+                            android:orientation="vertical"></LinearLayout>
 
-                        <EditText
-                            android:id="@+id/Q01EDLOCATION"
-                            android:layout_width="320dp"
-                            android:layout_height="60dp"
-                            android:layout_margin="10dp"
-                            android:background="@drawable/cell_with_border"
-                            android:ems="10"
-                            android:hint="@string/location_Hint"
-                            android:inputType="text"
-                            android:padding="10dp" />
-
-                        <EditText
-                            android:id="@+id/Q01EDBARCODE"
-                            android:layout_width="320dp"
-                            android:layout_height="60dp"
-                            android:layout_margin="10dp"
-                            android:background="@drawable/cell_with_border"
-                            android:ems="10"
-                            android:hint="@string/BarcodeInputHint"
-                            android:inputType="text"
-                            android:padding="10dp" />
-
-                        <EditText
-                            android:id="@+id/Q01EDMaterial"
-                            android:layout_width="match_parent"
-                            android:layout_height="60dp"
-                            android:layout_margin="10dp"
-                            android:layout_weight="1"
-                            android:background="@drawable/cell_with_border"
-                            android:ems="10"
-                            android:hint="@string/part"
-                            android:inputType="text"
-                            android:padding="10dp" />
-
-                        <EditText
-                            android:id="@+id/Q01EDBatch"
-                            android:layout_width="match_parent"
-                            android:layout_height="60dp"
-                            android:layout_margin="10dp"
-                            android:layout_weight="1"
-                            android:background="@drawable/cell_with_border"
-                            android:ems="10"
-                            android:hint="@string/BatchHint"
-                            android:inputType="text"
-                            android:padding="10dp" />
-
-                        <Button
-                            android:id="@+id/Q01BtnRegenrate"
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:paddingLeft="50dp"
-                            android:paddingTop="20dp"
-                            android:paddingRight="50dp"
-                            android:paddingBottom="20dp"
-                            android:text="@string/generate" />
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <Button
+                                android:id="@+id/Q01btnClear"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="5dp"
+                                android:layout_weight="1"
+                                android:paddingLeft="50dp"
+                                android:paddingTop="20dp"
+                                android:paddingRight="50dp"
+                                android:paddingBottom="20dp"
+                                android:text="@string/Clear" />
+
+                            <EditText
+                                android:id="@+id/Q01EDLOCATION"
+                                android:layout_width="320dp"
+                                android:layout_height="60dp"
+                                android:layout_margin="10dp"
+                                android:background="@drawable/cell_with_border"
+                                android:ems="10"
+                                android:hint="@string/location_Hint"
+                                android:inputType="text"
+                                android:padding="10dp" />
+
+                            <EditText
+                                android:id="@+id/Q01EDBARCODE"
+                                android:layout_width="320dp"
+                                android:layout_height="60dp"
+                                android:layout_margin="10dp"
+                                android:background="@drawable/cell_with_border"
+                                android:ems="10"
+                                android:hint="@string/BarcodeInputHint"
+                                android:inputType="text"
+                                android:padding="10dp" />
+
+                            <EditText
+                                android:id="@+id/Q01EDMaterial"
+                                android:layout_width="match_parent"
+                                android:layout_height="60dp"
+                                android:layout_margin="10dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/cell_with_border"
+                                android:ems="10"
+                                android:hint="@string/part"
+                                android:inputType="text"
+                                android:padding="10dp" />
+
+                            <EditText
+                                android:id="@+id/Q01EDBatch"
+                                android:layout_width="match_parent"
+                                android:layout_height="60dp"
+                                android:layout_margin="10dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/cell_with_border"
+                                android:ems="10"
+                                android:hint="@string/BatchHint"
+                                android:inputType="text"
+                                android:padding="10dp" />
+
+                            <Button
+                                android:id="@+id/Q01BtnRegenrate"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:paddingLeft="50dp"
+                                android:paddingTop="20dp"
+                                android:paddingRight="50dp"
+                                android:paddingBottom="20dp"
+                                android:text="@string/generate" />
+
+                        </LinearLayout>
 
                     </LinearLayout>
+                </ScrollView>
 
-                    <LinearLayout
-                        android:id="@+id/MainLinearHoriz"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="20dp"
-                        android:orientation="vertical"></LinearLayout>
-                </LinearLayout>
-            </ScrollView>
+            </LinearLayout>
+        </HorizontalScrollView>
+    </LinearLayout>
 
-        </LinearLayout>
-    </HorizontalScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

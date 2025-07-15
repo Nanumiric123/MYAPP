@@ -11,9 +11,9 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.STORAGE" />
@@ -30,6 +30,51 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication"
         android:usesCleartextTraffic="true">
+        <activity
+            android:name=".C13"
+            android:exported="false" />
+        <activity
+            android:name=".C12"
+            android:exported="false" />
+        <activity
+            android:name=".S03"
+            android:exported="false" />
+        <activity
+            android:name=".T07_QTF"
+            android:exported="false" />
+        <activity
+            android:name=".S02"
+            android:exported="false" />
+        <activity
+            android:name=".LoosePackPrinter"
+            android:exported="false" />
+        <activity
+            android:name=".P12"
+            android:exported="false" />
+        <activity
+            android:name=".P11"
+            android:exported="false" />
+        <activity
+            android:name=".binPartitionScrap"
+            android:exported="false" />
+        <activity
+            android:name=".binPartitionIssue"
+            android:exported="false" />
+        <activity
+            android:name=".binPartitionNew"
+            android:exported="false" />
+        <activity
+            android:name=".BinPartition"
+            android:exported="false" />
+        <activity
+            android:name=".C11"
+            android:exported="false" />
+        <activity
+            android:name=".T52"
+            android:exported="false" />
+        <activity
+            android:name=".T51"
+            android:exported="false" />
         <activity
             android:name=".CountScreen"
             android:exported="false" />
@@ -270,9 +315,6 @@
             android:name=".OutstandingList"
             android:exported="false" />
         <activity
-            android:name=".S02"
-            android:exported="false" />
-        <activity
             android:name=".T16"
             android:exported="false" />
         <activity
@@ -281,9 +323,6 @@
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".SAPProduction2"
-            android:exported="false" />
-        <activity
-            android:name=".S03"
             android:exported="false" />
         <activity
             android:name=".S01"

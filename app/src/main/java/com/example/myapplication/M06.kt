@@ -8,14 +8,18 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
+import android.widget.RadioButton
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout.DispatchChangeEvent
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
 import java.net.URL
 
 class M06 : AppCompatActivity() {
@@ -32,6 +36,8 @@ class M06 : AppCompatActivity() {
     private lateinit var btnSave: Button
     private lateinit var btnClear: Button
     private lateinit var btnMenu: Button
+    private lateinit var rbFromLoc:RadioButton
+    private lateinit var rbToLoc:RadioButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,18 +56,30 @@ class M06 : AppCompatActivity() {
         btnSave = findViewById(R.id.M06BtnSave)
         btnMenu = findViewById(R.id.M06BTNMENU)
         btnClear = findViewById(R.id.M06BTNCLEAR)
+        rbFromLoc = findViewById(R.id.M06RBFLoc)
+        rbToLoc = findViewById(R.id.M06RBTloc)
 
         val badgeNo = intent.getStringExtra("Badge").toString()
         val deviceID = Build.ID
         btnSave.setOnClickListener {
-            progressbarSetting(pb)
-            runBlocking {
-                val job = GlobalScope.launch {
+
+            if(rbFromLoc.isChecked){
+                //Save To db
+                CoroutineScope(Dispatchers.Main).launch {
+                    insertToDB(badgeNo,edPart.text.toString(),deviceID,edResvNo.text.toString(),edFromSloc.text.toString(),
+                        edQty.text.toString())
+                }
+
+            }
+            else if (rbToLoc.isChecked){
+                //Post to SAP
+                CoroutineScope(Dispatchers.Main).launch {
                     submitToSAP(edPart.text.toString(),edQty.text.toString(),badgeNo,deviceID, edResvNo.text.toString(),
                         edFromSloc.text.toString(),edToSloc.text.toString(),edToLoc.text.toString())
                 }
-                job.join()
+
             }
+
         }
         btnClear.setOnClickListener {
             clearEverything()
@@ -73,7 +91,17 @@ class M06 : AppCompatActivity() {
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN ||
                 keyCode == KeyEvent.KEYCODE_TAB && event.action == KeyEvent.ACTION_DOWN) {
                 //Perform Code
-                edPart.requestFocus()
+                if(rbFromLoc.isChecked){
+                    edPart.requestFocus()
+                }
+                else if (rbToLoc.isChecked){
+                    //retrieve data
+                    edPart.requestFocus()
+                    CoroutineScope(Dispatchers.Main).launch{
+
+                    }
+                }
+
                 return@OnKeyListener true
             }
             false
@@ -82,7 +110,15 @@ class M06 : AppCompatActivity() {
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN ||
                 keyCode == KeyEvent.KEYCODE_TAB && event.action == KeyEvent.ACTION_DOWN) {
                 //Perform Code
-                edQty.requestFocus()
+                if(rbFromLoc.isChecked){
+                    edQty.requestFocus()
+                }
+                else if (rbToLoc.isChecked){
+                    CoroutineScope(Dispatchers.Main).launch {
+                        retrieveFromData(edPart.text.toString(),edResvNo.text.toString())
+                    }
+                    edQty.isEnabled = false
+                }
                 return@OnKeyListener true
             }
             false
@@ -121,17 +157,74 @@ class M06 : AppCompatActivity() {
 
     private suspend fun submitToSAP(mat:String,quantity:String,badgeNo:String,deviceID:String,reservationNum:String,fromSloc:String,toSLoc:String,toLoc:String){
         var jsonOBJ = String()
-        withContext(Dispatchers.Default){
-            val linkUrl = URL("http://172.16.206.19/REST_API/Fourth/MPQM06SubmitSAP?material=${mat}&qty=${quantity}&badgeno=${badgeNo}&deviceID=${deviceID}&" +
+        withContext(Dispatchers.IO){
+            withContext(Dispatchers.Main){
+                progressbarSetting(pb)
+            }
+            //MPQM06SubmitSAP
+            val linkUrl = URL("http://172.16.206.19/REST_API/Fourth/MPPM06SubmitSAP?material=${mat}&qty=${quantity}&badgeno=${badgeNo}&deviceID=${deviceID}&" +
                     "reservationNo=${reservationNum}&fromSloc=${fromSloc}&toSloc=${toSLoc}&toLoc=${toLoc}")
             jsonOBJ = linkUrl.readText()
 
-            progressbarSetting(pb)
+            withContext(Dispatchers.Main){
+                progressbarSetting(pb)
+                runOnUiThread(kotlinx.coroutines.Runnable {
+                    val resTemp = jsonOBJ.split(':')
+                    triggerAlert(resTemp[0],resTemp[1])
+                })
+            }
+
         }
-        runOnUiThread(kotlinx.coroutines.Runnable {
-            val resTemp = jsonOBJ.split(':')
-            triggerAlert(resTemp[0],resTemp[1])
-        })
+
+    }
+
+    private suspend fun insertToDB(badgeNo:String,partNo:String,devID:String,reservationNo:String,fromStorLoc:String,smrQty:String){
+        var jsonOBJ = String()
+        withContext(Dispatchers.IO){
+            withContext(Dispatchers.Main){
+                progressbarSetting(pb)
+            }
+            val linKURL = URL("http://172.16.206.19/REST_API/Fourth/insertToTempScanTable?badgeNumber=${badgeNo}&" +
+                    "matNum=${partNo}&devID=${devID}&tcode=M06&cartonNum=20250122075622&resvNo=${reservationNo}&" +
+                    "fromSloc=${fromStorLoc}&fromLoc=DUMMY&qty=${smrQty}")
+            jsonOBJ = linKURL.readText()
+
+            withContext(Dispatchers.Main){
+                progressbarSetting(pb)
+                runOnUiThread(kotlinx.coroutines.Runnable {
+                    triggerAlert("Message",jsonOBJ)
+                })
+            }
+        }
+    }
+
+    private suspend fun retrieveFromData(mat:String,resvNo:String){
+        withContext(Dispatchers.IO){
+            val linkUrl = URL("http://172.16.206.19/REST_API/Fourth/retrieveM06FromLoc?material=${mat}&tcode=M06&reservationNo=${resvNo}")
+            withContext(Dispatchers.Main){
+                progressbarSetting(pb)
+            }
+            var jsonString = linkUrl.readText()
+            var jsonArray = JSONArray(jsonString)
+            for(i in 0 until jsonArray.length()){
+                val jsonObject = jsonArray.getJSONObject(i)
+                // Extract string values
+                val item = jsonObject.getString("item")
+                val reservationNo = jsonObject.getString("reservationNo")
+                val fromSloc = jsonObject.getString("fromSloc")
+                val fromLoc = jsonObject.getString("fromLoc")
+                val qty = jsonObject.getDouble("qty").toInt()
+
+                withContext(Dispatchers.Main){
+                    progressbarSetting(pb)
+                    runOnUiThread(Runnable{
+                        edPart.setText(item)
+                        edQty.setText(qty.toString())
+                        edFromSloc.setText(fromSloc)
+                    })
+                }
+            }
+        }
     }
 
     private fun progressbarSetting(v: View){
@@ -155,6 +248,8 @@ class M06 : AppCompatActivity() {
         builder.show()
     }
     private fun clearEverything() {
+        rbFromLoc.isChecked = true
+        edQty.isEnabled = true
         edFromSloc.text.clear()
         edFromLoc.text.clear()
         edToLoc.text.clear()

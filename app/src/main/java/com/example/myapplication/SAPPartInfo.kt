@@ -159,7 +159,9 @@ class SAPPartInfo : AppCompatActivity() {
                 tempList.add(PART_INFO(MATERIAL = JSONObject(resultArray[i].toString()).getString("MATERIAL"),
                     BATCH = JSONObject(resultArray[i].toString()).getString("BATCH"),
                     STORAGE_BIN = JSONObject(resultArray[i].toString()).getString("STORAGE_BIN"),
-                    QUANTITY = JSONObject(resultArray[i].toString()).getInt("QUANTITY")))
+                    QUANTITY = JSONObject(resultArray[i].toString()).getInt("QUANTITY"),
+                    STOR_LOC = JSONObject(resultArray[i].toString()).getString("STORAGE_LOCATION"),
+                    STOR_TYPE = JSONObject(resultArray[i].toString()).getString("STORAGE_TYPE")))
             }
         }
 
@@ -196,7 +198,9 @@ class SAPPartInfo : AppCompatActivity() {
                         tempList.add(PART_INFO(MATERIAL = JSONObject(resultArray[i].toString()).getString("MATERIAL"),
                             BATCH = JSONObject(resultArray[i].toString()).getString("BATCH"),
                             STORAGE_BIN = JSONObject(resultArray[i].toString()).getString("STORAGE_BIN"),
-                            QUANTITY = JSONObject(resultArray[i].toString()).getInt("QUANTITY")))
+                            QUANTITY = JSONObject(resultArray[i].toString()).getInt("QUANTITY"),
+                            STOR_LOC = JSONObject(resultArray[i].toString()).getString("STORAGE_LOCATION"),
+                            STOR_TYPE = JSONObject(resultArray[i].toString()).getString("STORAGE_TYPE")))
                     }
                 }
 
@@ -229,7 +233,9 @@ class SAPPartInfo : AppCompatActivity() {
                 tempList.add(PART_INFO(MATERIAL = JSONObject(jsonObj[i].toString()).getString("MATERIAL"),
                     BATCH = JSONObject(jsonObj[i].toString()).getString("BATCH"),
                     STORAGE_BIN = JSONObject(jsonObj[i].toString()).getString("STORAGE_BIN"),
-                    QUANTITY = JSONObject(jsonObj[i].toString()).getInt("QUANTITY")))
+                    QUANTITY = JSONObject(jsonObj[i].toString()).getInt("QUANTITY"),
+                    STOR_LOC = JSONObject(jsonObj[i].toString()).getString("STORAGE_LOCATION"),
+                    STOR_TYPE = JSONObject(jsonObj[i].toString()).getString("STORAGE_TYPE")))
             }
         }
 
@@ -277,6 +283,8 @@ class SAPPartInfo : AppCompatActivity() {
         dataTableRow.addView(generateTextViewForRow("BATCH"))
         dataTableRow.addView(generateTextViewForRow("QUANTITY"))
         dataTableRow.addView(generateTextViewForRow("STORAGE BIN"))
+        dataTableRow.addView(generateTextViewForRow("STORAGE LOCATION"))
+        dataTableRow.addView(generateTextViewForRow("STORAGE TYPE"))
         pTab.addView(dataTableRow)
     }
 
@@ -299,7 +307,8 @@ class SAPPartInfo : AppCompatActivity() {
         dataTableRow.addView(generateTextViewForRow(pRow.BATCH))
         dataTableRow.addView(generateTextViewForRow(pRow.QUANTITY.toString()))
         dataTableRow.addView(generateTextViewForRow(pRow.STORAGE_BIN))
-
+        dataTableRow.addView(generateTextViewForRow(pRow.STOR_TYPE))
+        dataTableRow.addView(generateTextViewForRow(pRow.STOR_LOC))
         return dataTableRow
     }
 
@@ -349,7 +358,11 @@ class SAPPartInfo : AppCompatActivity() {
     }
 
     data class PART_INFO(var MATERIAL:String,
-        var BATCH:String,
-        var STORAGE_BIN:String,
-        var QUANTITY:Int)
+                         var BATCH:String,
+                         var STORAGE_BIN:String,
+                         var QUANTITY:Int,
+                         var STOR_TYPE: String,
+                         var STOR_LOC: String)
+
+
 }

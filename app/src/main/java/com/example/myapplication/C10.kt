@@ -15,6 +15,8 @@ import android.widget.TableRow
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -25,6 +27,8 @@ import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.DataOutputStream
 import java.io.InputStreamReader
+import java.io.OutputStreamWriter
+import java.net.HttpURLConnection
 import java.net.URL
 
 class C10 : AppCompatActivity() {
@@ -45,6 +49,11 @@ class C10 : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_c10)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         badgeNumber = intent.getStringExtra("Badge").toString()
         val function_description = intent.getStringExtra("Desc").toString()
         title = findViewById(R.id.C10TVTITLE)
@@ -113,22 +122,43 @@ class C10 : AppCompatActivity() {
                     GstorageBin = storageBin.text.toString()
                     runBlocking {
                         val job = GlobalScope.launch {
+                            try{
+                                itemsList = parseJSON(getData(storageBin.text.toString())).items
+                            }
+                            catch (ex:Exception){
+                                runOnUiThread(kotlinx.coroutines.Runnable{
+                                    val builder = AlertDialog.Builder(c)
 
-                            itemsList = parseJSON(getData(storageBin.text.toString())).items
+                                    builder.setTitle("Problem")
+                                    builder.setMessage(ex.message.toString())
+                                    builder.setPositiveButton("OK") { dialog, which ->
+                                        // Do something when OK button is clicked
+                                        storageBin.requestFocus()
+                                    }
+                                    builder.show()
+                                })
+                            }
+
 
                         }
                         job.join()
                         if(itemsList.size > 0){
-                            if (mainLayout.childCount <= 0){
-                                mainLayout.addView(BuildTable(itemsList))
+                            try{
+                                if (mainLayout.childCount <= 0){
+                                    mainLayout.addView(BuildTable(itemsList))
+                                }
+                                else{
+                                    mainLayout.removeAllViews()
+                                    mainLayout.addView(BuildTable(itemsList))
+                                }
+                                if(scannedList.size > 0 ){
+                                    scannedList.clear()
+                                }
                             }
-                            else{
-                                mainLayout.removeAllViews()
-                                mainLayout.addView(BuildTable(itemsList))
+                            catch (e:Exception){
+
                             }
-                            if(scannedList.size > 0 ){
-                                scannedList.clear()
-                            }
+
                         }
                         else {
 
@@ -178,35 +208,41 @@ class C10 : AppCompatActivity() {
         val jsonString = jsonArray.toString()
         val payLoad = "{\"input\": ${jsonString},\"storagE_LOCATION\": \"2006\"}"
         withContext(Dispatchers.IO){
-            val urlLink = URL("http://172.16.206.19/BARCODEWEBAPI/API/SUBMITDATABASE")
-            val conn = urlLink.openConnection()
-            conn.doOutput = true
-            conn.setRequestProperty("Content-Type", "application/json")
-            conn.setRequestProperty("Content-Length", payLoad.length.toString())
+            try{
+                val urlLink = URL("http://172.16.206.19/BARCODEWEBAPI/API/SUBMITDATABASE")
+                val conn = urlLink.openConnection()
+                conn.doOutput = true
+                conn.setRequestProperty("Content-Type", "application/json")
+                conn.setRequestProperty("Content-Length", payLoad.length.toString())
 
-            DataOutputStream(conn.getOutputStream()).use { it.writeBytes(payLoad) }
+                DataOutputStream(conn.getOutputStream()).use { it.writeBytes(payLoad) }
 
-            BufferedReader(InputStreamReader(conn.getInputStream())).use { bf ->
-                val stringBuilder = StringBuilder()
-                var line:String?
+                BufferedReader(InputStreamReader(conn.getInputStream())).use { bf ->
+                    val stringBuilder = StringBuilder()
+                    var line:String?
 
-                while (bf.readLine().also { line = it } != null) {
-                    line?.let {
-                        stringBuilder.append(it)
+                    while (bf.readLine().also { line = it } != null) {
+                        line?.let {
+                            stringBuilder.append(it)
+                        }
                     }
+                    // Assign the final result
+                    result = stringBuilder.toString()
                 }
-                // Assign the final result
-                result = stringBuilder.toString()
+                if(result == "SUCCESS"){
+                    runOnUiThread(kotlinx.coroutines.Runnable {
+                        mainLayout.removeAllViews()
+                        storageBin.text.clear()
+                    })
+                }
+                else{
+                    TriggerAlert(result,"NETWORK ERROR",storageBin)
+                }
             }
-            if(result == "SUCCESS"){
-                runOnUiThread(kotlinx.coroutines.Runnable {
-                    mainLayout.removeAllViews()
-                    storageBin.text.clear()
-                })
+            catch(e:Exception){
+                TriggerAlert(e.message.toString(),"NETWORK ERROR",storageBin)
             }
-            else{
-                TriggerAlert(result,"NETWORK ERROR",storageBin)
-            }
+
         }
 
     }
@@ -273,56 +309,76 @@ class C10 : AppCompatActivity() {
                 runBlocking {
                     if (edVerify.text.toString().length > 45){
                         val job = GlobalScope.launch {
-                            transString = translateBcode(edVerify.text.toString())
+                            try{
+                                transString = translateBcode(edVerify.text.toString())
+                            }
+                            catch (e:Exception){
+
+                            }
+
 
                         }
                         job.join()
-                        val barcodeResult = translateAPIResult(transString)
-                        val matTextview:TextView = findViewById<TextView>(materialTV.id)
-                        val scannedItems = scannedList.filter { it.pART_NO == barcodeResult.pART_NO &&
-                                it.lOT == barcodeResult.lOT && it.rEEL_NO == barcodeResult.rEEL_NO }
-                        if (barcodeResult.pART_NO == matTextview.text.toString()){
-                            val batchTextView = findViewById<TextView>(batchTV.id)
-                            if (barcodeResult.lOT == batchTextView.text.toString()){
-                                if (scannedItems.isEmpty()){
-                                    val SAPQtyTextView = findViewById<TextView>(quantityTV.id)
-                                    val SAPQty = SAPQtyTextView.text.toString().toDouble()
-                                    val BarcodeQty = barcodeResult.qUANTITY.toDouble()
-                                    var total = 0.0
-                                    val totalScannedItems = scannedList.filter { it.pART_NO == barcodeResult.pART_NO && it.lOT == barcodeResult.lOT }.sumOf { it.qUANTITY.toDouble() }
+                        var barcodeResult = T06.BarcodeData(vENDOR = "", dATE = "", pART_NO = "",
+                            rEEL_NO = "", lOT = "", qUANTITY = "", uOM = "")
+                        try{
+                            barcodeResult = translateAPIResult(transString)
+                        }
+                        catch (e:Exception){
+                            TriggerAlert("Error",e.message.toString(),edVerify)
+                        }
+                        try{
+                            val matTextview:TextView = findViewById<TextView>(materialTV.id)
+                            val scannedItems = scannedList.filter { it.pART_NO == barcodeResult.pART_NO &&
+                                    it.lOT == barcodeResult.lOT && it.rEEL_NO == barcodeResult.rEEL_NO }
+                            if (barcodeResult.pART_NO == matTextview.text.toString()){
+                                val batchTextView = findViewById<TextView>(batchTV.id)
+                                if (barcodeResult.lOT == batchTextView.text.toString()){
                                     if (scannedItems.isEmpty()){
-                                        total = BarcodeQty + totalScannedItems
-                                    }
-                                    else {
-                                        total = BarcodeQty + 0.0
-                                    }
+                                        val SAPQtyTextView = findViewById<TextView>(quantityTV.id)
+                                        val SAPQty = SAPQtyTextView.text.toString().toDouble()
+                                        val BarcodeQty = barcodeResult.qUANTITY.toDouble()
+                                        var total = 0.0
+                                        val totalScannedItems = scannedList.filter { it.pART_NO == barcodeResult.pART_NO && it.lOT == barcodeResult.lOT }.sumOf { it.qUANTITY.toDouble() }
+                                        if (scannedItems.isEmpty()){
+                                            total = BarcodeQty + totalScannedItems
+                                        }
+                                        else {
+                                            total = BarcodeQty + 0.0
+                                        }
 
-                                    if(total > SAPQty){
-                                        TriggerAlert2("Quantity scanned is more than System QTY","Error wrong qty",edVerify)
+                                        if(total > SAPQty){
+                                            TriggerAlert2("Quantity scanned is more than System QTY","Error wrong qty",edVerify)
+                                        }
+                                        else{
+                                            val countedTV:TextView = findViewById(countedView.id)
+                                            runOnUiThread(kotlinx.coroutines.Runnable{
+                                                countedTV.text = total.toString()
+                                                scannedList.add(T06.BarcodeData(vENDOR = barcodeResult.vENDOR, dATE = barcodeResult.dATE,
+                                                    pART_NO = barcodeResult.pART_NO, rEEL_NO = barcodeResult.rEEL_NO, lOT = barcodeResult.lOT,
+                                                    qUANTITY = barcodeResult.qUANTITY, uOM = barcodeResult.uOM))
+                                            })
+                                        }
                                     }
                                     else{
-                                        val countedTV:TextView = findViewById(countedView.id)
-                                        runOnUiThread(kotlinx.coroutines.Runnable{
-                                            countedTV.text = total.toString()
-                                            scannedList.add(T06.BarcodeData(vENDOR = barcodeResult.vENDOR, dATE = barcodeResult.dATE,
-                                                pART_NO = barcodeResult.pART_NO, rEEL_NO = barcodeResult.rEEL_NO, lOT = barcodeResult.lOT,
-                                                qUANTITY = barcodeResult.qUANTITY, uOM = barcodeResult.uOM))
-                                        })
+                                        TriggerAlert("Duplicate Reel","Duplicate Reel scanned already",edVerify)
                                     }
                                 }
                                 else{
-                                    TriggerAlert("Duplicate Reel","Duplicate Reel scanned already",edVerify)
+                                    TriggerAlert("Wrong Batch","Batch is not the same as per scanned",edVerify)
                                 }
                             }
                             else{
-                                TriggerAlert("Wrong Batch","Batch is not the same as per scanned",edVerify)
+                                TriggerAlert("Wrong material","Material is not the same as per scanned",edVerify)
                             }
+                            edVerify.setText("")
+                            edVerify.requestFocus()
                         }
-                        else{
-                            TriggerAlert("Wrong material","Material is not the same as per scanned",edVerify)
+                        catch (E:Exception){
+                            TriggerAlert("Error",E.message.toString(),edVerify)
                         }
-                        edVerify.setText("")
-                        edVerify.requestFocus()
+
+
                     }
                 }
                 return@OnKeyListener true
@@ -345,61 +401,74 @@ class C10 : AppCompatActivity() {
 
     private fun parseJSON(input:String):JsonResponse{
         val jObj = JSONObject(input)
-
-        val msg = jObj.getString("msg")
-        val itemsArr = jObj.getJSONArray("items")
-
+        var msg = String()
         // Parse items from the itemsArray
         val itemsList = mutableListOf<Item_Data>()
-        for (i in 0 until itemsArr.length()) {
-            val itemObject = itemsArr.getJSONObject(i)
-            val item = Item_Data(
-                material = itemObject.getString("material"),
-                quantity = itemObject.getString("quantity"),
-                uom = itemObject.getString("uom"),
-                storagebin = itemObject.getString("storagebin"),
-                batch = itemObject.getString("batch")
-            )
+        try{
+            msg = jObj.getString("msg")
+            val itemsArr = jObj.getJSONArray("items")
 
-            itemsList.add(item)
+
+            for (i in 0 until itemsArr.length()) {
+                val itemObject = itemsArr.getJSONObject(i)
+                val item = Item_Data(
+                    material = itemObject.getString("material"),
+                    quantity = itemObject.getString("quantity"),
+                    uom = itemObject.getString("uom"),
+                    storagebin = itemObject.getString("stgE_BIN"),
+                    batch = itemObject.getString("batch")
+                )
+
+                itemsList.add(item)
+            }
         }
+        catch (e:Exception){
+
+        }
+
 
         return JsonResponse(msg, itemsList)
     }
 
-    private suspend fun getData(strBin:String):String{
+    private suspend fun getData(strBin:String):String {
         var result:String = String()
+        val url = "http://172.16.206.19/SMT_STORE/api/CYCLE_COUNT?storageB=$strBin"
+        var connection: HttpURLConnection? = null
         progressbarSetting(pb)
     withContext(Dispatchers.IO){
-
         try {
-            val payLoad = "{\n" +
-                    "  \"storagetyp\": \"006\",\n" +
-                    "  \"storageloc\": \"2006\",\n" +
-                    "  \"storagebin\": \"${strBin}\"\n" +
-                    "}".trimIndent()
-            val url = URL("http://172.16.206.19/BARCODEWEBAPI/API/BARCODEController1")
-            val conn = url.openConnection()
-            conn.doOutput = true
-            conn.setRequestProperty("Content-Type", "application/json")
-            conn.setRequestProperty("Content-Length", payLoad.length.toString())
+            // Create a URL object
+            val urlObj = URL(url)
 
-            DataOutputStream(conn.getOutputStream()).use { it.writeBytes(payLoad) }
-            BufferedReader(InputStreamReader(conn.getInputStream())).use { bf ->
+            // Open a connection to the URL and cast it to HttpURLConnection
+            connection = urlObj.openConnection() as HttpURLConnection
 
-                var line: String
+            // Set the request method to GET
+            connection!!.requestMethod = "GET"
 
-                while (bf.readLine().also { line = it } != null) {
-                    result = line
-                }
-                }
+            // Set the connection timeout and read timeout
+            connection!!.connectTimeout = 5000 // 5 seconds
+            connection!!.readTimeout = 5000 // 5 seconds
 
+            // Get the response code
+            val responseCode = connection!!.responseCode
+            println("Response Code: $responseCode")
+
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // Read the response from the input stream
+                val inputStream = connection!!.inputStream
+                val response = inputStream.bufferedReader().use { it.readText() }
+                result = response
+            } else {
+
+            }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            // Disconnect the connection
+            connection?.disconnect()
         }
-        catch (e:Exception){
-            var error:String = e.message.toString()
-
-        }
-
     }
 
         return result
@@ -447,6 +516,7 @@ class C10 : AppCompatActivity() {
 
     private fun translateBcode(input: String):String{
         var APIResult:String = ""
+        try {
         var url = URL("http://172.16.206.19/BARCODEWEBAPI/API/BARCODETRANSLATOR")
         val payLoad = "\"${input}\""
         val conn = url.openConnection()
@@ -455,11 +525,12 @@ class C10 : AppCompatActivity() {
         conn.setRequestProperty("Content-Length", payLoad.length.toString())
 
         DataOutputStream(conn.getOutputStream()).use { it.writeBytes(payLoad) }
-        try {
+
             BufferedReader(InputStreamReader(conn.getInputStream())).use { bf ->
                 var line: String
                 while (bf.readLine().also { line = it } != null) {
                     APIResult = line
+
                 }
             }
         }
@@ -471,18 +542,22 @@ class C10 : AppCompatActivity() {
     }
 
     private fun translateAPIResult(input: String):T06.BarcodeData{
+        var result:T06.BarcodeData = T06.BarcodeData(vENDOR = "", dATE = "", pART_NO = "",
+            rEEL_NO = "", lOT = "", qUANTITY = "", uOM = "")
+        try {
+            val jobj = JSONObject(input)
+            result.pART_NO = jobj.getString("material")
+            result.vENDOR = jobj.getString("vendor")
+            result.dATE = jobj.getString("date")
+            result.rEEL_NO = jobj.getString("reelnumber")
+            result.lOT = jobj.getString("batch")
+            result.uOM = jobj.getString("uom")
+            result.qUANTITY = jobj.getString("quantity")
+        }
+        catch (e:Exception){
 
-        val jobj = JSONObject(input)
-        val material = jobj.getString("material")
-        val vendor = jobj.getString("vendor")
-        val date = jobj.getString("date")
-        val reel = jobj.getString("reelnumber")
-        val batch = jobj.getString("batch")
-        val uom = jobj.getString("uom")
-        val qty = jobj.getString("quantity")
+        }
 
-        val result:T06.BarcodeData = T06.BarcodeData(vENDOR = vendor, dATE = date, pART_NO = material
-            , rEEL_NO = reel, lOT = batch, qUANTITY = qty, uOM = uom)
         return result
     }
 

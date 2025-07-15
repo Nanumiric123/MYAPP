@@ -2,8 +2,614 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".S02">
 
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/app_name"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <HorizontalScrollView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:fillViewport="true">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/S02TVTITLE"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="TextView"
+                                    android:textAlignment="center"
+                                    android:textColor="#040404"
+                                    android:textSize="24sp"
+                                    android:textStyle="bold" />
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="start"
+                                    android:orientation="horizontal">
+
+                                    <Button
+                                        android:id="@+id/s02btnMenu"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="60dp"
+                                        android:layout_margin="10dp"
+                                        android:layout_weight="1"
+                                        android:text="@string/menu" />
+
+                                    <Button
+                                        android:id="@+id/s02btnClear"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="60dp"
+                                        android:layout_margin="10dp"
+                                        android:layout_weight="1"
+                                        android:text="@string/Clear" />
+
+                                    <Button
+                                        android:id="@+id/s02btnSave"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="60dp"
+                                        android:layout_margin="10dp"
+                                        android:layout_weight="1"
+                                        android:text="@string/save" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="start"
+                                    android:orientation="vertical"
+                                    android:padding="10dp">
+
+                                    <EditText
+                                        android:id="@+id/S02DONUMBER"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="60dp"
+                                        android:background="@drawable/cell_with_border"
+                                        android:ems="10"
+                                        android:hint="@string/do_number"
+                                        android:inputType="text"
+                                        android:paddingStart="10dp"
+                                        android:textSize="20sp" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="start"
+                                    android:orientation="vertical"
+                                    android:padding="10dp">
+
+                                    <EditText
+                                        android:id="@+id/S02palletLabel"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="60dp"
+                                        android:background="@drawable/cell_with_border"
+                                        android:ems="10"
+                                        android:hint="Master Label"
+                                        android:inputType="text"
+                                        android:paddingStart="10dp"
+                                        android:textSize="20sp" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:orientation="vertical"
+                                    android:padding="5dp">
+
+                                    <LinearLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_margin="10dp"
+                                        android:orientation="horizontal">
+
+                                        <TextView
+                                            android:id="@+id/s02TVpart"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_margin="10dp"
+                                            android:padding="5dp"
+                                            android:text="Part "
+                                            android:textColor="#000000"
+                                            android:textSize="16sp"
+                                            android:textStyle="bold" />
+
+                                        <TextView
+                                            android:id="@+id/s02TVgroupID"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_margin="10dp"
+                                            android:padding="5dp"
+                                            android:text="Group ID"
+                                            android:textColor="#000000"
+                                            android:textSize="16sp"
+                                            android:textStyle="bold" />
+
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_margin="10dp"
+                                        android:orientation="horizontal">
+
+                                        <TextView
+                                            android:id="@+id/s02TVNoCarton"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_margin="10dp"
+                                            android:padding="5dp"
+                                            android:text="No. of Carton"
+                                            android:textColor="#000000"
+                                            android:textSize="16sp"
+                                            android:textStyle="bold" />
+
+                                        <TextView
+                                            android:id="@+id/s02TVpltID"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_margin="10dp"
+                                            android:padding="5dp"
+                                            android:text="Carton/Pallet ID"
+                                            android:textColor="#070707"
+                                            android:textSize="16sp"
+                                            android:textStyle="bold" />
+
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="match_parent"
+                                        android:orientation="horizontal">
+
+                                        <LinearLayout
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="match_parent"
+                                            android:orientation="vertical"
+                                            android:padding="5dp">
+
+                                            <TextView
+                                                android:id="@+id/textView35"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:background="@drawable/cell_with_border"
+                                                android:padding="5dp"
+                                                android:text="Gross Weight"
+                                                android:textColor="#000000"
+                                                android:textSize="16sp"
+                                                android:textStyle="bold" />
+
+                                            <EditText
+                                                android:id="@+id/S02EDGW"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="60dp"
+                                                android:background="@drawable/cell_with_border"
+                                                android:ems="10"
+                                                android:hint="Gross Weight"
+                                                android:inputType="number|numberDecimal"
+                                                android:padding="10dp"
+                                                android:text="@string/Empty" />
+                                        </LinearLayout>
+
+                                        <LinearLayout
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="match_parent"
+                                            android:orientation="vertical"
+                                            android:padding="5dp">
+
+                                            <TextView
+                                                android:id="@+id/textView36"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:background="@drawable/cell_with_border"
+                                                android:padding="5dp"
+                                                android:text="Dimension"
+                                                android:textColor="#000000"
+                                                android:textSize="16sp"
+                                                android:textStyle="bold" />
+
+                                            <EditText
+                                                android:id="@+id/S02EDDim"
+                                                android:layout_width="83dp"
+                                                android:layout_height="60dp"
+                                                android:background="@drawable/cell_with_border"
+                                                android:ems="10"
+                                                android:inputType="text"
+                                                android:padding="10dp"
+                                                android:text="CCM" />
+                                        </LinearLayout>
+
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="match_parent"
+                                        android:gravity="center"
+                                        android:orientation="horizontal"
+                                        android:padding="5dp">
+
+                                        <LinearLayout
+                                            android:layout_width="90dp"
+                                            android:layout_height="wrap_content"
+                                            android:background="@drawable/cell_with_border"
+                                            android:orientation="vertical">
+
+                                            <TextView
+                                                android:id="@+id/textView21"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:padding="5dp"
+                                                android:text="Length"
+                                                android:textColor="#000000"
+                                                android:textSize="16sp"
+                                                android:textStyle="bold" />
+
+                                            <EditText
+                                                android:id="@+id/S02EDLEN"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="60dp"
+                                                android:background="@drawable/cell_with_border"
+                                                android:ems="10"
+                                                android:hint="Length"
+                                                android:inputType="number|numberDecimal"
+                                                android:padding="10dp" />
+                                        </LinearLayout>
+
+                                        <TextView
+                                            android:id="@+id/textView38"
+                                            android:layout_width="20dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            android:text="X"
+                                            android:textAlignment="center"
+                                            android:textColor="#000000"
+                                            android:textSize="16sp" />
+
+                                        <LinearLayout
+                                            android:layout_width="90dp"
+                                            android:layout_height="match_parent"
+                                            android:background="@drawable/cell_with_border"
+                                            android:orientation="vertical">
+
+                                            <TextView
+                                                android:id="@+id/textView31"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:padding="5dp"
+                                                android:text="Width"
+                                                android:textColor="#000000"
+                                                android:textSize="16sp"
+                                                android:textStyle="bold" />
+
+                                            <EditText
+                                                android:id="@+id/S02EDWID"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="60dp"
+                                                android:background="@drawable/cell_with_border"
+                                                android:ems="10"
+                                                android:hint="Width"
+                                                android:inputType="number|numberDecimal"
+                                                android:padding="5dp" />
+                                        </LinearLayout>
+
+                                        <TextView
+                                            android:id="@+id/textView41"
+                                            android:layout_width="20dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            android:text="X"
+                                            android:textAlignment="center"
+                                            android:textColor="#000000"
+                                            android:textSize="16sp" />
+
+                                        <LinearLayout
+                                            android:layout_width="90dp"
+                                            android:layout_height="match_parent"
+                                            android:background="@drawable/cell_with_border"
+                                            android:orientation="vertical">
+
+                                            <TextView
+                                                android:id="@+id/textView37"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:padding="5dp"
+                                                android:text="Height"
+                                                android:textColor="#000000"
+                                                android:textSize="16sp"
+                                                android:textStyle="bold" />
+
+                                            <EditText
+                                                android:id="@+id/S02EDHEI"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="60dp"
+                                                android:background="@drawable/cell_with_border"
+                                                android:ems="10"
+                                                android:hint="Height"
+                                                android:inputType="number|numberDecimal"
+                                                android:padding="5dp" />
+                                        </LinearLayout>
+                                    </LinearLayout>
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:padding="5dp">
+
+                                    <Button
+                                        android:id="@+id/s02btnPrev"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_margin="5dp"
+                                        android:layout_weight="1"
+                                        android:text="Previous" />
+
+                                    <Button
+                                        android:id="@+id/s02btnOK"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_margin="5dp"
+                                        android:layout_weight="1"
+                                        android:text="Ok" />
+
+                                    <Button
+                                        android:id="@+id/s02btnNxt"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_margin="5dp"
+                                        android:layout_weight="1"
+                                        android:text="Next" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="10dp">
+
+                                    <TextView
+                                        android:id="@+id/S02PLItems"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Picklist Items"
+                                        android:textColor="#070707"
+                                        android:textSize="20sp"
+                                        android:textStyle="bold" />
+
+                                    <TableLayout
+                                        android:id="@+id/S02TLPicklist"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="match_parent">
+
+                                        <TableRow
+                                            android:id="@+id/S02PLHeaderRow"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="match_parent">
+
+                                            <TextView
+                                                android:id="@+id/S02PLHeaderMaterial"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:background="@drawable/cell_with_border"
+                                                android:gravity="center"
+                                                android:paddingStart="10dp"
+                                                android:paddingEnd="10dp"
+                                                android:text="Part No"
+                                                android:textColor="#000000"
+                                                android:textSize="14sp"
+                                                android:textStyle="bold" />
+
+                                            <TextView
+                                                android:id="@+id/S02PLHeaderPickQty"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:background="@drawable/cell_with_border"
+                                                android:paddingStart="10dp"
+                                                android:paddingEnd="10dp"
+                                                android:text="Quantity"
+                                                android:textColor="#000000"
+                                                android:textSize="14sp"
+                                                android:textStyle="bold" />
+
+                                            <TextView
+                                                android:id="@+id/S02PLHeaderBatchNo"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:background="@drawable/cell_with_border"
+                                                android:paddingStart="10dp"
+                                                android:paddingEnd="10dp"
+                                                android:text="Batch No"
+                                                android:textColor="#000000"
+                                                android:textSize="14sp"
+                                                android:textStyle="bold" />
+
+                                        </TableRow>
+
+                                    </TableLayout>
+
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_marginTop="10dp"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                android:padding="10dp">
+
+                                <TextView
+                                    android:id="@+id/textView30"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="S02 Submit "
+                                    android:textColor="#000000"
+                                    android:textSize="20sp"
+                                    android:textStyle="bold" />
+
+                                <TableLayout
+                                    android:id="@+id/S02TLSB"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center">
+
+                                    <TableRow
+                                        android:id="@+id/S02THSB"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center">
+
+                                        <TextView
+                                            android:id="@+id/S02TVSBPN"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:background="@drawable/cell_with_border"
+                                            android:paddingStart="10dp"
+                                            android:paddingEnd="10dp"
+                                            android:text="Part Number"
+                                            android:textColor="#000000"
+                                            android:textStyle="bold" />
+
+                                        <TextView
+                                            android:id="@+id/S02TVSBLN"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:background="@drawable/cell_with_border"
+                                            android:paddingStart="10dp"
+                                            android:paddingEnd="10dp"
+                                            android:text="Lot No"
+                                            android:textColor="#000000"
+                                            android:textStyle="bold" />
+
+                                        <TextView
+                                            android:id="@+id/S02TVSBST"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:background="@drawable/cell_with_border"
+                                            android:paddingStart="10dp"
+                                            android:paddingEnd="10dp"
+                                            android:text="Pallet ID"
+                                            android:textColor="#000000"
+                                            android:textStyle="bold" />
+
+                                        <TextView
+                                            android:id="@+id/S02TVSBGW"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:background="@drawable/cell_with_border"
+                                            android:paddingStart="5dp"
+                                            android:paddingEnd="5dp"
+                                            android:text="Gross Weight"
+                                            android:textColor="#000000"
+                                            android:textStyle="bold" />
+
+                                        <TextView
+                                            android:id="@+id/S02TVSBNW"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:background="@drawable/cell_with_border"
+                                            android:paddingStart="5dp"
+                                            android:paddingEnd="5dp"
+                                            android:text="Net Weight"
+                                            android:textColor="#000000"
+                                            android:textStyle="bold" />
+
+                                        <TextView
+                                            android:id="@+id/S02TVSBDM"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:background="@drawable/cell_with_border"
+                                            android:paddingStart="5dp"
+                                            android:paddingEnd="5dp"
+                                            android:text="Dimension"
+                                            android:textColor="#000000"
+                                            android:textStyle="bold" />
+
+                                        <TextView
+                                            android:id="@+id/S02TVSBLEN"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:background="@drawable/cell_with_border"
+                                            android:paddingStart="5dp"
+                                            android:paddingEnd="5dp"
+                                            android:text="Length"
+                                            android:textColor="#000000"
+                                            android:textStyle="bold" />
+
+                                        <TextView
+                                            android:id="@+id/S02TVSBWID"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:background="@drawable/cell_with_border"
+                                            android:paddingStart="5dp"
+                                            android:paddingEnd="5dp"
+                                            android:text="Width"
+                                            android:textColor="#000000"
+                                            android:textStyle="bold" />
+
+                                        <TextView
+                                            android:id="@+id/S02TVSBHEI"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:background="@drawable/cell_with_border"
+                                            android:paddingStart="5dp"
+                                            android:paddingEnd="5dp"
+                                            android:text="Height"
+                                            android:textColor="#000000"
+                                            android:textStyle="bold" />
+                                    </TableRow>
+
+                                </TableLayout>
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <ProgressBar
+                            android:id="@+id/S02PB"
+                            style="?android:attr/progressBarStyle"
+                            android:layout_width="394dp"
+                            android:layout_height="match_parent"
+                            android:visibility="invisible"
+                            tools:visibility="invisible" />
+
+                    </FrameLayout>
+                </LinearLayout>
+            </HorizontalScrollView>
+
+        </LinearLayout>
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
