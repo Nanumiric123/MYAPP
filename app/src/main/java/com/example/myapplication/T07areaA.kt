@@ -27,9 +27,7 @@ import java.net.URL
 
 class T07areaA : AppCompatActivity() {
     private lateinit var currentArea:String
-    private val INACTIVITY_DELAY = 3600000L // 3600 seconds
     private val handler = Handler(Looper.getMainLooper())
-    private var lastInteractionTime = 0L
     private lateinit var titleTV: TextView
     private lateinit var mLayout: LinearLayout
     private lateinit var c: Context
@@ -89,11 +87,11 @@ class T07areaA : AppCompatActivity() {
     }
 
     private fun BuildTable(data:MutableList<dataRequestor>) {
-        var tableParam: TableLayout.LayoutParams = TableLayout.LayoutParams(
+        val tableParam: TableLayout.LayoutParams = TableLayout.LayoutParams(
             TableLayout.LayoutParams.WRAP_CONTENT,
             TableLayout.LayoutParams.WRAP_CONTENT
         )
-        var rowParams: TableRow.LayoutParams = TableRow.LayoutParams(
+        val rowParams: TableRow.LayoutParams = TableRow.LayoutParams(
             TableRow.LayoutParams.WRAP_CONTENT,
             TableRow.LayoutParams.WRAP_CONTENT
         )
@@ -114,7 +112,7 @@ class T07areaA : AppCompatActivity() {
             pullListRow.addView(CF.generateTVforpulllistT07("Pull List Number : " + data[i].PULLLIST,c))
             mLayout.addView(pullListRow)
 
-            var dataTable = TableLayout(c)
+            val dataTable = TableLayout(c)
             dataTable.layoutParams = tableParam
 
             for (j in 0 until data[i].listData.size) {

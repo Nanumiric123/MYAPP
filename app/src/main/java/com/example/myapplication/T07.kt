@@ -117,7 +117,7 @@ class T07 : AppCompatActivity() {
             var newAreaActivityIntent = Intent(c,className)
             newAreaActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             newAreaActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            newAreaActivityIntent.putExtra("Area", "QTF_TEMP Area")
+            newAreaActivityIntent.putExtra("Area", "QTF")
             newAreaActivityIntent.putExtra("Badge", g_badgeNum)
             startActivity(newAreaActivityIntent)
 

@@ -488,12 +488,24 @@ class T07TransferMaterial : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         // Call your function here
-        val classText = "com.example.myapplication.T07area$gArea"
-        val className = Class.forName(classText)
-        val intent = Intent(this, className)
-        intent.putExtra("Badge", gbadgeNum)
-        intent.putExtra("Area", gArea)
-        startActivity(intent)
+        if(gArea == "QTF"){
+            val classText = "com.example.myapplication.T07_$gArea"
+            val className = Class.forName(classText)
+            val intent = Intent(this, className)
+            intent.putExtra("Badge", gbadgeNum)
+            intent.putExtra("Area", gArea)
+            startActivity(intent)
+        }
+        else{
+            val classText = "com.example.myapplication.T07area$gArea"
+            val className = Class.forName(classText)
+            val intent = Intent(this, className)
+            intent.putExtra("Badge", gbadgeNum)
+            intent.putExtra("Area", gArea)
+            startActivity(intent)
+        }
+
+
     }
 }
 data class barcodeData(var VENDOR:String,var DATE:String,var PART_NO:String,var REEL_NO:String,var LOT:String,var QUANTITY:String,var UOM:String)

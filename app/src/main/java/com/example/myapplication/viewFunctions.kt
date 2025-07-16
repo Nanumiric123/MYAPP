@@ -26,7 +26,7 @@ class viewFunctions {
             gravity = Gravity.CENTER
             setPadding(15, 15, 15, 15)
             layoutParams = TableRow.LayoutParams(
-                TableRow.LayoutParams.MATCH_PARENT,
+                TableRow.LayoutParams.WRAP_CONTENT,
                 TableRow.LayoutParams.WRAP_CONTENT
             )
             setBackgroundResource(R.drawable.cell_with_border)
@@ -42,8 +42,8 @@ class viewFunctions {
             gravity = Gravity.CENTER
             setPadding(15, 15, 15, 15)
             layoutParams = TableRow.LayoutParams(
-                TableRow.LayoutParams.MATCH_PARENT,
-                140
+                TableRow.LayoutParams.WRAP_CONTENT,
+                TableRow.LayoutParams.MATCH_PARENT
             )
             setBackgroundResource(R.drawable.cell_with_border)
         }
